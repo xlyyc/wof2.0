@@ -1,0 +1,526 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>业务设计器</title>
+<link href="lib/jquery.ui/themes/redmond/jquery-ui.min.css" rel="stylesheet">
+<link href="lib/jquery.ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+<link href="lib/jquery.ui.multiselect/css/jquery.multiselect.css" rel="stylesheet">
+<link href="lib/jquery.ui.multiselect/css/jquery.multiselect.filter.css" rel="stylesheet">
+<style type="text/css">
+<!--
+	* {
+		margin:0;
+		padding:0;
+	}
+	body{
+		font: 12px "Trebuchet MS", sans-serif;
+	}
+-->
+</style>
+<script src="lib/jquery/jquery.min.js"></script>
+<script src="lib/jquery.ui/jquery-ui-1.10.1.custom.min.js"></script>
+<script src="lib/jquery.ui.multiselect/js/jquery.multiselect.min.js"></script>
+<script src="lib/jquery.ui.multiselect/js/jquery.multiselect.filter.min.js"></script>
+<script src="lib/jquery.ztree/js/jquery.ztree.all-3.5.js"></script>
+<script src="lib/json2.js"></script>
+<script src="lib/fixConsole.js"></script>
+<script src="lib/jsonpath-0.8.0.js"></script>
+<script src="src/wof/kernel/initNamespace.js"></script>
+
+<script src="src/wof/util/Hashtable.js"></script>
+<script src="src/wof/util/ObjectManager.js"></script>
+<script src="src/wof/util/Observer.js"></script>
+<script src="src/wof/util/ArrayList.js"></script>
+<script src="src/wof/util/Selector.js"></script>
+<script src="src/wof/util/SelectorList.js"></script>
+<script src="src/wof/util/GlobalObject.js"></script>
+<script src="src/wof/util/Tool.js"></script>
+
+<script src="src/wof/widget/Mediator.js"></script>
+
+<script src="src/wof/customWindow/MetaTreeSelector.js"></script>
+<script src="src/wof/customWindow/ComponentTreeSelector.js"></script>
+<script src="src/wof/customWindow/ParamMapsWindow.js"></script>
+<script src="src/wof/customWindow/PageParamWindow.js"></script>
+<script src="src/wof/customWindow/PageFormSelector.js"></script>
+
+<script src="src/wof/widget/Tab.js"></script>
+<script src="src/wof/widget/TabItem.js"></script>
+<script src="src/wof/widget/Toolbar.js"></script>
+<script src="src/wof/widget/ToolbarItem.js"></script>
+<script src="src/wof/widget/Button.js"></script>
+<script src="src/wof/widget/Label.js"></script>
+<script src="src/wof/widget/Tree.js"></script>
+
+<script src="src/wof/widget/spanner/ButtonSpanner.js"></script>
+<script src="src/wof/widget/spanner/TabSpanner.js"></script>
+
+<script src="src/wof/bizWidget/FlowLayout.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutSection.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutItem.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutHelper.js"></script>
+<script src="src/wof/bizWidget/GridLayout.js"></script>
+<script src="src/wof/bizWidget/PropertyBar.js"></script>
+<script src="src/wof/bizWidget/ObjectBar.js"></script>
+<script src="src/wof/bizWidget/OnSendMessageBar.js"></script>
+<script src="src/wof/bizWidget/OnReceiveMessageBar.js"></script>
+<script src="src/wof/bizWidget/VoucherComponent.js"></script>
+<script src="src/wof/bizWidget/VoucherItemGroup.js"></script>
+<script src="src/wof/bizWidget/VoucherItem.js"></script>
+<script src="src/wof/bizWidget/BizEntityTree.js"></script>
+<script src="src/wof/bizWidget/PageFormTree.js"></script>
+<script src="src/wof/bizWidget/ComponentsTree.js"></script>
+<script src="src/wof/bizWidget/ParamWindow.js"></script>
+<script src="src/wof/bizWidget/PageParamWindow.js"></script>
+
+<script src="src/wof/bizWidget/spanner/GridLayoutSpanner.js"></script>
+<script src="src/wof/bizWidget/spanner/FlowLayoutSpanner.js"></script>
+<script src="src/wof/bizWidget/spanner/VoucherComponentSpanner.js"></script>
+<script src="src/wof/bizWidget/ObjectInspector.js"></script>
+
+<script src="src/wof/functionWidget/AddRecordComponent.js"></script>
+
+<script src="src/wof/functionWidget/spanner/AddRecordComponentSpanner.js"></script>
+
+<script src="src/wof/kernel/initAOP.js"></script>
+
+<script src="lib/wis/src/wis/kernel/initNamespace.js"></script>
+
+<script src="lib/wis/src/wis/util/Hashtable.js"></script>
+<script src="lib/wis/src/wis/util/ObjectManager.js"></script>
+<script src="lib/wis/src/wis/util/Observer.js"></script>
+<script src="lib/wis/src/wis/util/ArrayList.js"></script>
+<script src="lib/wis/src/wis/util/Selector.js"></script>
+<script src="lib/wis/src/wis/util/SelectorList.js"></script>
+<script src="lib/wis/src/wis/util/GlobalObject.js"></script>
+<script src="lib/wis/src/wis/util/Tool.js"></script>
+
+<script src="lib/wis/src/wis/widget/Tab.js"></script>
+<script src="lib/wis/src/wis/widget/Tree.js"></script>
+
+<script src="lib/wis/src/wis/kernel/initSystem.js"></script>
+
+
+<script>
+
+var wof_components = [];
+
+jQuery(function(){
+	var headerHeight = 35;
+	var sidebar1Width = 200;
+	var sidebar2Width = 237;
+	var container = jQuery('#container');
+	var header = jQuery('#header');
+	var sidebar1 = jQuery('#sidebar1');
+	var sidebar2 = jQuery('#sidebar2');
+	var content = jQuery('#content');
+	//设置布局
+	function layout(){
+		var windowWidth = jQuery(window).width();
+		var windowHeight = jQuery(window).height();
+		container.css('width', windowWidth+'px');
+		container.css('height', windowHeight+'px');
+		container.css('left', '0px');
+		container.css('top', '0px');
+		header.css('width', windowWidth+'px');
+		header.css('height', headerHeight+'px');
+		header.css('left', '0px');
+		header.css('top', '0px');
+		sidebar1.css('width', sidebar1Width+'px');
+		sidebar1.css('height', (windowHeight-headerHeight-5)+'px');
+		sidebar1.css('left', '0px');
+		sidebar1.css('top', headerHeight+'px');		
+		content.css('width', (windowWidth-sidebar1Width-sidebar2Width)+'px');
+		content.css('height', (windowHeight-headerHeight-5)+'px');
+		content.css('left', sidebar1Width+'px');
+		content.css('top', headerHeight+'px');
+		sidebar2.css('width', sidebar2Width+'px');
+		sidebar2.css('height', (windowHeight-headerHeight-5)+'px');
+		sidebar2.css('left', (windowWidth-sidebar2Width)+'px');
+		sidebar2.css('top', headerHeight+'px');
+	}
+	//初始化左侧边栏
+	function initSidebar1(){
+		var windowWidth = jQuery(window).width();
+		var windowHeight = jQuery(window).height();
+
+        var tab = wof$.create('Tab');
+        tab.setOnSendMessage([{id:'wof.widget.Tab_active',method:'return false;'}]);
+        tab.setWidth(sidebar1Width-7);
+        tab.setHeight(windowHeight-headerHeight-12);
+        tab.setTop(0);
+        tab.setLeft(0);
+        tab.setActiveItemIndex(1);
+        tab.appendTo(sidebar1);
+
+        tab.insertItem({title:'构件'});
+
+        var gridLayout1 = wof$.create('GridLayout');
+        gridLayout1.setOnSendMessage([{id:'wof.bizWidget.GridLayout_active',method:'return false;'}]);
+        gridLayout1.setWidth(sidebar1Width-18);
+        gridLayout1.setHeight(tab.getHeight()-108);
+        gridLayout1.setTop(0);
+        gridLayout1.setLeft(0);
+        //gridLayout1.setCss('ui-widget-content');
+        gridLayout1.setOverflow('y');
+
+        tab.insertNode(gridLayout1,1);
+
+        var layoutComponents = []; //布局构件
+        var bizWidgetComponents = []; //业务构件
+        var widgetComponents = []; //功能构件
+        var baseComponents = []; //基础构件
+
+        var flowLayoutSpanner = wof$.create('FlowLayoutSpanner');
+        flowLayoutSpanner.appendTo(gridLayout1);
+        layoutComponents.push(flowLayoutSpanner);
+        wof_components.push(flowLayoutSpanner);
+
+        var gridLayoutSpanner = wof$.create('GridLayoutSpanner');
+        gridLayoutSpanner.appendTo(gridLayout1);
+        layoutComponents.push(gridLayoutSpanner);
+        wof_components.push(gridLayoutSpanner);
+
+        var voucherComponentSpanner = wof$.create('VoucherComponentSpanner');
+        voucherComponentSpanner.appendTo(gridLayout1);
+        bizWidgetComponents.push(voucherComponentSpanner);
+        wof_components.push(voucherComponentSpanner);
+
+        var addRecordComponentSpanner = wof$.create('AddRecordComponentSpanner');
+        addRecordComponentSpanner.appendTo(gridLayout1);
+        widgetComponents.push(addRecordComponentSpanner);
+        wof_components.push(addRecordComponentSpanner);
+
+        var buttonSpanner = wof$.create('ButtonSpanner');
+        buttonSpanner.appendTo(gridLayout1);
+        baseComponents.push(buttonSpanner);
+        wof_components.push(buttonSpanner);
+
+        //var tabSpanner = wof$.create('TabSpanner');
+        //tabSpanner.appendTo(gridLayout1);
+        //widgetComponents.push(tabSpanner);
+        //wof_components.push(tabSpanner);
+
+
+        for(var i=0;i<wof_components.length;i++){
+            var name = wof_components[i].getMeta().name;
+            for(var t=0;t<wof_components.length;t++){
+                var n = wof_components[t].getMeta().name;
+                if(name!=n){
+                    var onReceiveMessage = wof_components[t].getOnReceiveMessage();
+                    onReceiveMessage.push({id: name+'_active',method:'this._receivePropertysAndRenderSelf(null);'});
+                    wof_components[t].setOnReceiveMessage(onReceiveMessage);
+                }
+            }
+        }
+
+        var compositeComponentsData = [];
+        try{
+            compositeComponentsData = JSON.parse(pageComponentTemplateList());
+        }catch(e){
+        }
+        var objectBar = wof$.create('ObjectBar');
+        objectBar.setCompositeComponents(compositeComponentsData);
+        objectBar.setLayoutComponents(layoutComponents);
+        objectBar.setBizWidgetComponents(bizWidgetComponents);
+        objectBar.setWidgetComponents(widgetComponents);
+        objectBar.setBaseComponents(baseComponents);
+        objectBar.setWidth(sidebar1Width-35);
+        objectBar.setTop(0);
+        objectBar.setLeft(0);
+        objectBar.appendTo(gridLayout1);
+
+
+        tab.insertItem({title:'层次视图'});
+
+        var gridLayout2 = wof$.create('GridLayout');
+        gridLayout2.setOnSendMessage([{id:'wof.bizWidget.GridLayout_active',method:'return false;'}]);
+        gridLayout2.setWidth(sidebar1Width-18);
+        gridLayout2.setHeight(tab.getHeight()-108);
+        gridLayout2.setTop(0);
+        gridLayout2.setLeft(0);
+        //gridLayout2.setCss('ui-widget-content');
+        gridLayout2.setOverflow('y');
+
+        tab.insertNode(gridLayout2,2);
+
+
+       /* var objectInspector = wof$.create('ObjectInspector');
+        objectInspector.setHeight(tab.getHeight()-108);
+        objectInspector.setWidth(sidebar1Width-35);
+        objectInspector.setTop(0);
+        objectInspector.setLeft(0);
+        objectInspector.appendTo(gridLayout2);*/
+
+
+
+        tab.render();
+	}
+    //重设左侧边栏
+    function resizeSidebar1(){
+        try{
+            var windowWidth = jQuery(window).width();
+            var windowHeight = jQuery(window).height();
+            var tab = wof$.find('#'+(sidebar1.children('div[oid]').first().attr('oid'))).get(0);
+            tab.setHeight(windowHeight-headerHeight-12);
+            var ic = tab.getItemsCount();
+            for(var i=1;i<=ic;i++){
+                var node = tab.getNodesByItemIndex(i)[0];
+                node.setHeight(tab.getHeight()-108);
+            }
+            tab.render();
+        }catch(e){}
+    }
+	//初始化右侧边栏
+	function initSidebar2(){
+		var windowWidth = jQuery(window).width();
+		var windowHeight = jQuery(window).height();
+
+        var messageIds = [];
+        for(var i=0;i<wof_components.length;i++) {
+            var o = wof_components[i];
+            var messageId = o.getClassName()+'_render';
+            messageIds.push(messageId);
+        }
+
+        var tab = wof$.create('Tab');
+        tab.setOnSendMessage([{id:'wof.widget.Tab_active',method:'return false;'}]);
+        tab.setWidth(sidebar2Width-7);
+        tab.setHeight(windowHeight-headerHeight-12);
+        tab.setTop(0);
+        tab.setLeft(0);
+        tab.setActiveItemIndex(1);
+        tab.appendTo(sidebar2);
+
+        tab.insertItem({title:'属性'});
+        var propertyBar = wof$.create('PropertyBar');
+        propertyBar.setWidth(sidebar2Width-24);
+        propertyBar.setHeight(tab.getHeight()-108);
+        var method = 'if(!jQuery.isEmptyObject(message.sender.parameters)){this.setParameters(message.sender.parameters);this.setMeta(message.sender.meta);this.render();}';
+        var onReceiveMessage = [];
+        for(var i=0;i<messageIds.length;i++){
+            onReceiveMessage.push({id:messageIds[i],method:method});
+        }
+        propertyBar.setOnReceiveMessage(onReceiveMessage);
+        propertyBar.setTop(0);
+        propertyBar.setLeft(4);
+        tab.insertNode(propertyBar,1);
+
+        tab.insertItem({title:'发送'});
+        var onSendMessageBar = wof$.create('OnSendMessageBar');
+        onSendMessageBar.setWidth(sidebar2Width-24);
+        onSendMessageBar.setHeight(tab.getHeight()-108);
+        var meth = 'if(!jQuery.isEmptyObject(message.sender.parameters)){this.setParameters(message.sender.parameters);this.setSendMessages(message.sender.meta.sendMessages);this.render();}';
+        var receives = [];
+        for(var i=0;i<messageIds.length;i++){
+            receives.push({id:messageIds[i],method:meth});
+        }
+        onSendMessageBar.setOnReceiveMessage(receives);
+        onSendMessageBar.setTop(0);
+        onSendMessageBar.setLeft(4);
+        tab.insertNode(onSendMessageBar,2);
+
+        tab.insertItem({title:'监听'});
+        var onReceiveMessageBar = wof$.create('OnReceiveMessageBar');
+        onReceiveMessageBar.setWidth(sidebar2Width-24);
+        onReceiveMessageBar.setHeight(tab.getHeight()-108);
+        var met = 'if(!jQuery.isEmptyObject(message.sender.parameters)){this.setParameters(message.sender.parameters);this.render();}';
+        var receiv = [];
+        for(var i=0;i<messageIds.length;i++){
+            receiv.push({id:messageIds[i],method:met});
+        }
+        onReceiveMessageBar.setOnReceiveMessage(receiv);
+        onReceiveMessageBar.setTop(0);
+        onReceiveMessageBar.setLeft(4);
+        tab.insertNode(onReceiveMessageBar,3);
+        var ic = tab.getItemsCount();
+        for(var i=1;i<=ic;i++){
+            var node = tab.getNodesByItemIndex(i)[0];
+            node.setHeight(tab.getHeight()-108);
+        }
+        tab.render();
+
+	}
+	//重设右侧边栏
+	function resizeSidebar2(){
+		try{
+			var windowWidth = jQuery(window).width();
+			var windowHeight = jQuery(window).height();
+            var tab = wof$.find('#'+(sidebar2.children('div[oid]').first().attr('oid'))).get(0);
+            tab.setHeight(windowHeight-headerHeight-12);
+            tab.render();
+		}catch(e){}
+	}
+	//初始化工作区
+	function initContent(){
+
+        var flowLayoutHelper = wof$.create('FlowLayoutHelper');
+
+        var itemHeight = 70;
+        var width = 811;
+
+        var flowLayout = wof$.create('FlowLayout');
+        flowLayout.setLeft(0);
+        flowLayout.setTop(0);
+        flowLayout.setWidth(width);
+        flowLayout.setItemHeight(itemHeight);
+        flowLayout.setCols(4);
+
+        var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
+        flowLayout.insertSection(sectionData1);
+
+        flowLayout.render();
+
+        flowLayout.appendTo(content);
+
+    }
+	//重设工作区
+	function resizeContent(){
+		try{
+			var windowWidth = jQuery(window).width();
+			var windowHeight = jQuery(window).height();
+			var layout = getContentLayout();
+            layout.setWidth(windowWidth-sidebar1Width-sidebar2Width);
+            layout.setHeight(windowHeight-headerHeight-5);
+
+            layout.sendMessage('wof.bizWidget.FlowLayout_resize');
+		}catch(e){}
+	}
+	jQuery(window).load(function(){
+		layout();
+        initSidebar1();
+		initSidebar2();
+        initContent();
+	});
+	jQuery(window).resize(function(){
+		layout();
+		resizeSidebar1();
+		resizeSidebar2();
+        resizeContent();
+	});
+	jQuery("#pageParamBtn,#saveBtn,#saveToCompositeComponentBtn").button().click(function(event){
+		event.preventDefault();
+		var id = jQuery(event.target).attr('id');
+        if(id=='pageParamBtn'){
+            wof.customWindow.PageParamWindow.run();
+        }else if(id=='saveBtn'){
+
+            var json = {};
+			var layout = getContentLayout();
+
+            //将叶子节点数据拉平导出
+            var _components = [];
+            var _commandComponents = [];
+            function _getLeafData(node){
+                var clz = node.getClassName();
+                var shortName = clz.substring(clz.lastIndexOf('.')+1);
+                var package =  clz.substring(0,clz.lastIndexOf(shortName)-1);
+                var spann = eval(package+'.spanner.'+shortName+'Spanner');
+                if(spann!=null){
+                    if(spann.prototype.exportData!=null){
+                        if(clz.indexOf('wof.bizWidget')>=0){
+                            var componentData = {};
+                            componentData['ID'] = node.getComponentId();
+                            componentData['ComponentName'] = node.getComponentName();
+                            componentData['CallStr'] = node.getCallStr();
+                            componentData['ControlType'] = shortName;
+                            componentData['ControlContext'] = spann.prototype.exportData(node);
+                            _components.push(componentData);
+                        }else{
+                            _commandComponents.push(spann.prototype.exportData(node));
+                        }
+                    }
+                }
+                var childNodes = node.childNodes();
+                if(childNodes.length>0){
+                    for(var i=0; i<childNodes.length; i++){
+                        _getLeafData(childNodes[i]);
+                    }
+                }
+            }
+
+            _getLeafData(layout);
+
+            var _inputParam = [];
+            function _getInputParam(){
+                for(var name in pageInputParam){
+                    _inputParam.push(pageInputParam[name]);
+                }
+            }
+		
+            _getInputParam();
+
+            json.inputParam = _inputParam;
+            json.components = _components;
+            json.commandComponents = _commandComponents;
+            json.layout = layout.getData();
+
+            console.log(JSON.stringify(json)); //导出元数据
+		}else if(id=='saveToCompositeComponentBtn'){
+            jQuery('#dialog-form').dialog({
+                autoOpen: false,
+                height:200,
+                width: 300,
+                modal: true,
+                buttons:{
+                    '保存':function(){
+                        var name = jQuery('#dialog_form_name').val();
+                        if(name!=null&&name.length>0){
+                            var templateData = null;
+                            var cutObj = wof$.find('#'+(wof.util.GlobalObject.get('cutObjectId'))).get(0);
+                            if(cutObj!=null){
+                                if(window.confirm('是否只保存剪切板中的内容？')){
+                                    templateData = cutObj.getData();
+                                }else{
+                                    templateData = getContentLayout().getData();
+                                }
+                            }else{
+                                templateData = getContentLayout().getData();
+                            }
+
+                            console.log('模板名称:'+name+'  模板元数据:'+JSON.stringify(templateData)); //导出模板元数据
+                        }
+                        jQuery(this).dialog('close');
+                    },
+                    '关闭':function(){
+                        jQuery(this).dialog('close');
+                    }
+                }
+            });
+            jQuery('#dialog-form').dialog('open');
+        }
+	});
+});
+
+window.getContentLayout = function(){
+    return wof$.find('#'+(jQuery('#content').children('div[oid]').first().attr('oid'))).get(0);
+}
+var pageInputParam = {};
+
+</script>
+</head>
+<body>
+<div id="container" style="position:absolute;">
+	<div id="header" style="position:absolute;background-color:#fff;border-bottom:1px solid black;z-index:90000">
+        <input type="button" id="pageParamBtn" value="页面参数" />
+        <input type="button" id="saveBtn" value="保存" />
+        <input type="button" id="saveToCompositeComponentBtn" value="保存为模板" />
+    </div>
+	<div id="sidebar1" style="position:absolute;z-index:90000;">
+    	
+    </div>
+    <div id="content" style="position:absolute;z-index: auto;">
+    	
+    </div>
+    <div id="sidebar2" style="position:absolute;z-index:90000;">
+    	
+    </div>
+</div>
+
+<div id="dialog-form" title="保存为模板">
+    <p class="validateTips">名称</p>
+    <p><input type="text" id="dialog_form_name" class="text" /></p>
+</div>
+</body>
+</html>
