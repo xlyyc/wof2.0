@@ -67,10 +67,7 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._onReceiveMessage = null;
                     obj[o].prototype.getOnReceiveMessage = function() {
-                        if(this._onReceiveMessage==null){
-                            this._onReceiveMessage = [];
-                        }
-                        return this._onReceiveMessage;
+                        return this._onReceiveMessage || [];
                     };
                     obj[o].prototype.setOnReceiveMessage = function(onReceiveMessage) {
                         if(onReceiveMessage instanceof Array){
@@ -88,7 +85,7 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._isComponent = null; //是否为构件对象 默认 true 是
                     obj[o].prototype.getIsComponent = function(){
-                        return this._isComponent || true;
+                        return this._isComponent==null?true:this._isComponent;
                     };
                     obj[o].prototype.setIsComponent = function(isComponent){
                         this._isComponent = isComponent;
@@ -118,7 +115,7 @@ var wof$_aop = (function(){
                     obj[o].prototype._domInstance = null;
                     obj[o].prototype.getDomInstance = function(){
                         if(this._domInstance==null){
-                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" isComponent="'+this.getIsComponent()+'">');
+                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" iscomponent="'+this.getIsComponent()+'">');
                         }
                         return this._domInstance;
                     };
@@ -178,6 +175,7 @@ var wof$_aop = (function(){
                                 }
                                 var senderComponentId = findComponentId(message.sender.id);
                                 var receiverComponentId = findComponentId(this.getId());
+                                console.log(senderComponentId+'    ======== '+receiverComponentId);
                                 if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
                                     
                                     //todo 需要做合并 并且此分支逻辑有待检验

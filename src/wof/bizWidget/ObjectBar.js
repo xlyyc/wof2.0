@@ -1,6 +1,7 @@
 ﻿wof.bizWidget.ObjectBar = function(){
     this._version = '1.0';
 
+    this.setIsComponent(true);
 };
 wof.bizWidget.ObjectBar.prototype={
 
@@ -84,7 +85,7 @@ wof.bizWidget.ObjectBar.prototype={
             toolbarItem0.appendTo(toolbar);
             for(var i=0;i<layoutComponents.length;i++){
                 var widget = layoutComponents[i];
-                var label = new wof.widget.Label();
+                var label = wof$.create('Label');
                 label.setIsComponent(false);
                 label.setIco('src/img/dropdown.png');
                 label.setWidth(130);
@@ -161,7 +162,7 @@ wof.bizWidget.ObjectBar.prototype={
             toolbarItem2.appendTo(toolbar);
             for(var i=0;i<widgetComponents.length;i++){
                 var widget = widgetComponents[i];
-                var label = new wof.widget.Label();
+                var label = wof$.create('Label');
                 label.setIsComponent(false);
                 label.setIco('src/img/dropdown.png');
                 label.setWidth(130);
@@ -199,7 +200,7 @@ wof.bizWidget.ObjectBar.prototype={
             toolbarItem3.appendTo(toolbar);
             for(var i=0;i<baseComponents.length;i++){
                 var widget = baseComponents[i];
-                var label = new wof.widget.Label();
+                var label = wof$.create('Label');
                 label.setIsComponent(false);
                 label.setIco('src/img/dropdown.png');
                 label.setWidth(130);
@@ -237,7 +238,7 @@ wof.bizWidget.ObjectBar.prototype={
             toolbarItem4.appendTo(toolbar);
             for(var i=0;i<compositeComponents.length;i++){
                 var compositeComponent = compositeComponents[i];
-                var label = new wof.widget.Label();
+                var label = wof$.create('Label');
                 label.setIsComponent(false);
                 label.setIco('src/img/dropdown.png');
                 label.setWidth(130);

@@ -9,6 +9,13 @@ wof.bizWidget.FlowLayout = function () {
 
     this.setPosition('relative');
 
+    this.setIsComponent(false);
+
+    var onReceiveMessage = [];
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this.newWidgetDrop(message);'});
+    this.setOnReceiveMessage(onReceiveMessage);
+
+
 };
 wof.bizWidget.FlowLayout.prototype = {
     /**
@@ -113,6 +120,38 @@ wof.bizWidget.FlowLayout.prototype = {
         this.setActiveSectionIndex(data.activeSectionIndex);
         this.setActiveItemRank(data.activeItemRank);
 
+    },
+
+    //在item中创建新的widget对象
+    newWidgetDrop : function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var obj = wof.util.ObjectManager.get(message.data.widgetId);
+        var item = wof.util.ObjectManager.get(message.sender.id);
+        var node = null;
+        if(obj.getType()=='composite'){ //todo 复合构件
+            var json = {};
+            try{
+                json = JSON.parse(getPageComponentTemplateById(obj.getValue()));
+                node = eval('(new '+json.className+'())');     //todo 改用wof$方式
+                node.setData(json);
+            }catch(e){
+                alert(e);
+            }
+        }else{
+            node = eval('(new '+obj.getValue()+'()).createSelf('+item.getWidth()+','+item.getHeight()+');');
+        }
+        this.insertNode(node);
+
+        var section = this.findSectionByIndex(this.getActiveSectionIndex());
+        section.calcLayout();
+        this.calcLayout();
+
+        //todo 需要让wof_object_resize真正被接收到
+        this.render(); //临时的解决
+
+        this.sendMessage('wof_object_resize');
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
     },
 
     _insideOnReceiveMessage:{

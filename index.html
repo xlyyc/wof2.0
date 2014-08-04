@@ -60,6 +60,7 @@
 <script src="src/wof/bizWidget/FlowLayoutSection.js"></script>
 <script src="src/wof/bizWidget/FlowLayoutItem.js"></script>
 <script src="src/wof/bizWidget/FlowLayoutHelper.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutComponent.js"></script>
 <script src="src/wof/bizWidget/GridLayout.js"></script>
 <script src="src/wof/bizWidget/PropertyBar.js"></script>
 <script src="src/wof/bizWidget/ObjectBar.js"></script>
@@ -358,6 +359,8 @@ jQuery(function(){
     
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
 
+        var flowLayoutComponent = wof$.create('FlowLayoutComponent');
+
         var itemHeight = 70;
         var width = 811;
 
@@ -371,9 +374,11 @@ jQuery(function(){
         var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
         flowLayout.insertSection(sectionData1);
 
-        flowLayout.render();
+        flowLayout.appendTo(flowLayoutComponent);
 
-        flowLayout.appendTo(content);
+        flowLayoutComponent.render();
+
+        flowLayoutComponent.appendTo(content);
 
 
         var button1 = wof$.create('Button');
