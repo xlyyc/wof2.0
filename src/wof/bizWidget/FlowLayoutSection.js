@@ -7,7 +7,7 @@
 wof.bizWidget.FlowLayoutSection = function () {
     this._version = '1.0';
 
-    this.setIsInside(true);
+    this.setIsComponent(false);
 
     this.getDomInstance().css('overflow','hidden');
 
@@ -694,7 +694,7 @@ wof.bizWidget.FlowLayoutSection.prototype = {
         //添加label
         if(this._label==null){
             var label = wof$.create('Label');
-            label.setIsInside(true);
+            label.setIsComponent(false);
             label.setTop(0);
             label.setLeft(0);
             this._label = label;

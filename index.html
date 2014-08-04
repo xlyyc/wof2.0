@@ -355,6 +355,7 @@ jQuery(function(){
 	//初始化工作区
 	function initContent(){
 
+    
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
 
         var itemHeight = 70;
@@ -374,6 +375,26 @@ jQuery(function(){
 
         flowLayout.appendTo(content);
 
+
+        var button1 = wof$.create('Button');
+        button1.setLeft(0);
+        button1.setTop(0);
+        button1.setWidth(100);
+        button1.setHeight(30);
+        button1.setLabel('按钮1');
+        button1.appendTo(content);
+        
+        var button2 = wof$.create('Button');
+        button2.setLeft(400);
+        button2.setTop(200);
+        button2.setWidth(100);
+        button2.setHeight(30);
+        button2.setLabel('按钮2');
+        button2.appendTo(content);
+        
+        button1.render();
+        button2.render();
+        
     }
 	//重设工作区
 	function resizeContent(){

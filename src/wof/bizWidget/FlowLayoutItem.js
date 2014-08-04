@@ -7,7 +7,7 @@
 wof.bizWidget.FlowLayoutItem = function () {
     this._version = '1.0';
 
-    this.setIsInside(true);
+    this.setIsComponent(false);
 
     this.getDomInstance().css('overflow','hidden');
 

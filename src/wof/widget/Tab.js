@@ -227,7 +227,6 @@ wof.widget.Tab.prototype = {
             newItem.appendTo(this);
         }
         var gridLayout = wof$.create('GridLayout');
-        gridLayout.setIsInside(true);
        // gridLayout.setOverflow('auto');
         gridLayout.setWidth(this.getWidth());
         gridLayout.setHeight(this.getHeight()-52);

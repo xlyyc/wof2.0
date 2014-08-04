@@ -27,6 +27,8 @@ var wof$_aop = (function(){
                             })(obj[o]['prototype'],p);
                         }
                     }*/
+                    
+                    //todo 需要移除 
                     obj[o].prototype._componentName = null;
                     obj[o].prototype.getComponentName = function() {
                         return this._componentName || '';
@@ -36,42 +38,31 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._componentId = null;
                     obj[o].prototype.getComponentId = function() {
-                        if(this._componentId==null){
-                            this._componentId=this.getId();
-                        }
-                        return this._componentId;
+                        return this._componentId || this.getId();
                     };
                     obj[o].prototype.setComponentId = function(componentId) {
                         this._componentId = componentId;
                     };
+                    
+                    
 
                     obj[o].prototype._version = null;
                     obj[o].prototype.getVersion = function(){
-                        if(this._version==null){
-                            this._version = '1.0';
-                        }
-                        return this._version;
+                        return this._version || '1.0';
                     };
                     obj[o].prototype._onSendMessage = null;
                     obj[o].prototype.getOnSendMessage = function() {
-                        if(this._onSendMessage==null){
-                            this._onSendMessage = [];
-                        }
-                        return this._onSendMessage;
+                        return this._onSendMessage || [];
                     };
                     obj[o].prototype._onSendMessageMethods = null;
                     obj[o].prototype.setOnSendMessage = function(onSendMessage) {
-                        if(this.getIsInside()!=true){
-                            if(onSendMessage instanceof Array){
-                                this._onSendMessage = onSendMessage;
-                                this._onSendMessageMethods = {};
-                                var _this = this;
-                                jQuery.each(this.getOnSendMessage(), function(i,n){
-                                    _this._onSendMessageMethods[n.id] = n.method;
-                                });
-                            }
-                        }else{
-                            alert('内部对象:'+this.getClassName()+'不能定制业务脚本');
+                        if(onSendMessage instanceof Array){
+                            this._onSendMessage = onSendMessage;
+                            this._onSendMessageMethods = {};
+                            var _this = this;
+                            jQuery.each(this.getOnSendMessage(), function(i,n){
+                                _this._onSendMessageMethods[n.id] = n.method;
+                            });
                         }
                     };
                     obj[o].prototype._onReceiveMessage = null;
@@ -82,49 +73,36 @@ var wof$_aop = (function(){
                         return this._onReceiveMessage;
                     };
                     obj[o].prototype.setOnReceiveMessage = function(onReceiveMessage) {
-                        if(this.getIsInside()!=true){
-                            if(onReceiveMessage instanceof Array){
-                                this._onReceiveMessageMethods = {};
-                                var _this = this;
-                                jQuery.each(this.getOnReceiveMessage(), function(i,n){
-                                    wof.util.Observer.unregister(n.id, _this);
-                                });
-                                _this._onReceiveMessage = onReceiveMessage;
-                                jQuery.each(this.getOnReceiveMessage(), function(i,n){
-                                    wof.util.Observer.register(n.id, _this, n.priority==null?50: n.priority);
-                                    _this._onReceiveMessageMethods[n.id] = n.method;
-                                });
-                            }
-                        }else{
-                            alert('内部对象:'+this.getClassName()+'不能定制业务脚本');
+                        if(onReceiveMessage instanceof Array){
+                            this._onReceiveMessageMethods = {};
+                            var _this = this;
+                            jQuery.each(this.getOnReceiveMessage(), function(i,n){
+                                wof.util.Observer.unregister(n.id, _this);
+                            });
+                            _this._onReceiveMessage = onReceiveMessage;
+                            jQuery.each(this.getOnReceiveMessage(), function(i,n){
+                                wof.util.Observer.register(n.id, _this, n.priority==null?50: n.priority);
+                                _this._onReceiveMessageMethods[n.id] = n.method;
+                            });
                         }
                     };
-                    obj[o].prototype._isInside = null; //是否为内部对象 true 是 false 否
-                    obj[o].prototype.getIsInside = function(){
-                        if(this._isInside==null){
-                            this._isInside = false;
-                        }
-                        return this._isInside;
+                    obj[o].prototype._isComponent = null; //是否为构件对象 默认 true 是
+                    obj[o].prototype.getIsComponent = function(){
+                        return this._isComponent || true;
                     };
-                    obj[o].prototype.setIsInside = function(isInside){
-                        this._isInside = isInside;
+                    obj[o].prototype.setIsComponent = function(isComponent){
+                        this._isComponent = isComponent;
                     };
                     obj[o].prototype._position = null;
                     obj[o].prototype.getPosition = function() {
-                        if(this._position == null){
-                            this._position = 'absolute';
-                        }
-                        return this._position;
+                        return this._position || 'absolute';
                     };
                     obj[o].prototype.setPosition = function(position) {
                         this._position = position;
                     };
                     obj[o].prototype._zIndex = null;
                     obj[o].prototype.getZIndex = function() {
-                        if(this._zIndex == null){
-                            this._zIndex = 'auto';
-                        }
-                        return this._zIndex;
+                        return this._zIndex || 'auto';
                     };
                     obj[o].prototype.setZIndex = function(zIndex) {
                         this._zIndex = zIndex;
@@ -135,95 +113,95 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._id = null;
                     obj[o].prototype.getId = function(){
-                        return (this._id==null)?(this._id=wof.util.Tool.uuid()):this._id;
+                        return this._id==null?(this._id=wof.util.Tool.uuid()):this._id;
                     };
                     obj[o].prototype._domInstance = null;
                     obj[o].prototype.getDomInstance = function(){
                         if(this._domInstance==null){
-                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" isInside="'+this.getIsInside()+'">');
+                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" isComponent="'+this.getIsComponent()+'">');
                         }
                         return this._domInstance;
                     };
-                    obj[o].prototype.getOriginNode = function(){
-                        var parentNode = this;
-                        while((parentNode=parentNode.parentNode())!=null){
-                            if(parentNode.getIsInside()!=true){
-                                break;
+                    obj[o].prototype.sendMessage = function(messageId, data){
+                        //如果有用户自定义的业务逻辑 先调用之 并根据返回值判断是否需要继续发送消息
+                        var f = true;
+                        if(this._onSendMessageMethods==null){
+                            this._onSendMessageMethods = {};
+                        }
+                        var onSendMessageFunc = this._onSendMessageMethods[messageId];
+                        if(onSendMessageFunc!=null){
+                            try{
+                                var func = null;
+                                eval('func=(function wof$_onSendMessageFunc(message){ '+onSendMessageFunc+' })');
+                                f = func.call(this,{'id':messageId, 'sender':this.getData(), 'data':data});
+                            }catch(e){
+                                console.log('执行业务['+messageId+']处理过程发生异常 原因:'+e);
                             }
                         }
-                        return parentNode;
-                    };
-                    obj[o].prototype.sendMessage = function(messageId, data){
-                        //todo 需要改变冒泡的方式
-                        //新的处理方式为 构件内部的对象只能接收来同一个构件的其他对象的消息
-                        //并且不能对除了同一个构件的对象之外的构件发送消息
-                        //取消内部对象标识 改用一个标识为“构件”的属性来取代
-                        if(this.getIsInside()==true){ //如果是内部对象 则以冒泡方式逐级向上发送消息 并且消息终止在非内部对象的那一级上
-                            var parentNode = this;
-                            while((parentNode=parentNode.parentNode())!=null){
-                                var ret = null;
-                                if(parentNode._insideOnReceiveMessage==null){
-                                    parentNode._insideOnReceiveMessage={};
-                                }
-                                var messageMethod = parentNode._insideOnReceiveMessage[messageId];
-                                if(messageMethod!=null){
-                                    try{
-                                        ret = messageMethod.call(parentNode,{'id':messageId, 'sender':this.getData(), 'data':data});
-                                    }catch(e){
-                                        console.log('执行对象自带消息['+messageId+']处理过程发生异常 原因:'+e);
-                                    }
-                                }
-                                if(parentNode.getIsInside()!=true){
-                                    break;
-                                }else if(ret==false){
-                                    break;
-                                }
-                            }
-                        }else{
-                            //如果有用户自定义的业务逻辑 先调用之 并根据返回值判断是否需要继续发送消息
-                            var f = true;
-                            if(this._onSendMessageMethods==null){
-                                this._onSendMessageMethods = {};
-                            }
-                            var onSendMessageFunc = this._onSendMessageMethods[messageId];
-                            if(onSendMessageFunc!=null){
-                                try{
-                                    var func = null;
-                                    eval('func=(function wof$_onSendMessageFunc(message){ '+onSendMessageFunc+' })');
-                                    f = func.call(this,{'id':messageId, 'sender':this.getData(), 'data':data});
-                                }catch(e){
-                                    console.log('执行业务['+messageId+']处理过程发生异常 原因:'+e);
-                                }
-                            }
-                            if(f!=false){
-                                //如果不是内部对象 则以消息订阅的方式发布消息
-                                wof.util.Observer.sendMessage({'id':messageId, 'sender':this.getData(), 'data':data});
-                            }
+                        //如果业务逻辑返回值为true 则可以发送消息
+                        if(f!=false){
+                            wof.util.Observer.sendMessage({'id':messageId, 'sender':this.getData(), 'data':data});
                         }
                     };
                     obj[o].prototype._onReceiveMessageMethods = null;
                     obj[o].prototype.receiveMessage = function(message){
-                        if(this.getIsInside()!=true){ //不是内部对象
-                            if(this._onReceiveMessageMethods==null){
-                                this._onReceiveMessageMethods = {};
-                            }
-                            var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
-                            if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
-                                try{
-                                    var func = null;
-                                    eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
-                                    return func.apply(this,arguments);
-                                }catch(e){
-                                    console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                        if(this.getIsComponent() == true){
+                            //构件对象只能响应来自其他构件对象的消息 即只能响应isComponent为true的对象的消息
+                            if(message.sender.isComponent==true){
+                                if(this._onReceiveMessageMethods==null){
+                                    this._onReceiveMessageMethods = {};
+                                }
+                                var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
+                                if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
+                                    try{
+                                        var func = null;
+                                        eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
+                                        return func.apply(this,arguments);
+                                    }catch(e){
+                                        console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                                    }
                                 }
                             }
-                        }else{ //如果是内部对象 则不能响应外部发布的消息
-                            console.log('内部对象不能响应处理消息:'+message.id);
+                        }else{
+                            if(message.sender.isComponent!=true){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
+                                //查找指定对象id的构件对象
+                                function findComponentId(id){
+                                    var componentId = null;
+                                    var parentNode = wof.util.ObjectManager.get(id);
+                                    while((parentNode=parentNode.parentNode())!=null){
+                                        if(parentNode.getIsComponent()==true){
+                                            componentId = parentNode.getId();
+                                            break;
+                                        }
+                                    }
+                                    return componentId;
+                                }
+                                var senderComponentId = findComponentId(message.sender.id);
+                                var receiverComponentId = findComponentId(this.getId());
+                                if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
+                                    
+                                    //todo 需要做合并 并且此分支逻辑有待检验
+                                    if(this._onReceiveMessageMethods==null){
+                                        this._onReceiveMessageMethods = {};
+                                    }
+                                    var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
+                                    if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
+                                        try{
+                                            var func = null;
+                                            eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
+                                            return func.apply(this,arguments);
+                                        }catch(e){
+                                            console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                                        }
+                                    }
+                                    
+                                }
+                            }
                         }
                     };
                     obj[o].prototype._hiden = null;
                     obj[o].prototype.getHiden = function(){
-                        return (this._hiden==null)?this._hiden=false:this._hiden;
+                        return this._hiden==null?(this._hiden=false):this._hiden;
                     };
                     obj[o].prototype.setHiden = function(hiden){
                         if(hiden==true){
@@ -235,7 +213,7 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._css = null;
                     obj[o].prototype.getCss = function(){
-                        return (this._css==null)?this._css='':this._css;
+                        return this._css==null?this._css='':this._css;
                     };
                     obj[o].prototype.setCss = function(css){
                         this._css = css;
@@ -273,10 +251,8 @@ var wof$_aop = (function(){
                         }else{
                             wof.util.ObjectManager.remove(this.getId());
                             if(flag==true){
-                                if(this.getIsInside()!=true){
-                                    this.setOnReceiveMessage([]);
-                                    this.setOnSendMessage([]);
-                                }
+                                this.setOnReceiveMessage([]);
+                                this.setOnSendMessage([]);
                                 this.getDomInstance().remove();
                             }else{
                                 this.getDomInstance().detach();
@@ -293,10 +269,8 @@ var wof$_aop = (function(){
                         var childNodes = this.childNodes();
                         for(var i=childNodes.length-1; i>=0; i--){
                             childNodes[i].removeChildren(flag);
-                            if(childNodes[i].getIsInside()!=true){
-                                childNodes[i].setOnReceiveMessage([]);
-                                childNodes[i].setOnSendMessage([]);
-                            }
+                            childNodes[i].setOnReceiveMessage([]);
+                            childNodes[i].setOnSendMessage([]);
                             if(flag==true){
                                 childNodes[i].remove(true);
                             }else{
@@ -458,7 +432,9 @@ var wof$_aop = (function(){
                             data.componentId=this.getComponentId();
                             data.componentName=this.getComponentName();
                             data.id=this.getId();
-                            data.isInside = this.getIsInside();
+                            
+                            data.isComponent = this.getIsComponent();
+                            
                             data.className=this.getClassName();
                             data.hiden=this.getHiden();
                             data.position = this.getPosition();
@@ -504,24 +480,27 @@ var wof$_aop = (function(){
                             }
                             this.setComponentId(data.componentId);
                             this.setComponentName(data.componentName);
-                            this.setIsInside(data.isInside);
+                            
+                            this.setIsComponent(data.isComponent);
+                            
                             this.setCss(data.css);
                             this.setHiden(data.hiden);
                             this.setPosition(data.position);
                             this.setZIndex(data.zIndex);
                             this.setScale(data.scale);
-                            if(this.getIsInside()!=true){
-                                var onSendMessage = [];
-                                for(var i=0;i<data.onSendMessage.length;i++){
-                                    onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
-                                }
-                                this.setOnSendMessage(onSendMessage);
-                                var onReceiveMessage = [];
-                                for(var i=0;i<data.onReceiveMessage.length;i++){
-                                    onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
-                                }
-                                this.setOnReceiveMessage(onReceiveMessage);
+                            
+                            //设置监听和发送消息
+                            var onSendMessage = [];
+                            for(var i=0;i<data.onSendMessage.length;i++){
+                                onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
                             }
+                            this.setOnSendMessage(onSendMessage);
+                            var onReceiveMessage = [];
+                            for(var i=0;i<data.onReceiveMessage.length;i++){
+                                onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
+                            }
+                            this.setOnReceiveMessage(onReceiveMessage);
+                            
                             var dataChildLen=data.childNodes.length;
                             var tempNodes=new wof.util.Hashtable();
                             var objChildLen=this.childNodes().length;
@@ -636,6 +615,9 @@ var wof$_aop = (function(){
                                         break;
                                     }
                                 }
+                                
+                                //todo 逻辑修改为如果当前对象为非构件对象 则只有同属于一个构件对象的对象的定制业务脚本才能调用当前对象的set方法
+                                /**
                                 if(this.getIsInside()==true){ //如果当前对象为内部对象 则定制业务脚本不能调用内部对象的set方法
                                     var canCall = true;
                                     var c = this[funcName].caller;
@@ -651,6 +633,7 @@ var wof$_aop = (function(){
                                         return;
                                     }
                                 }
+                                */
 
                                 var propertyName = '_'+(funcName.substring(3, funcName.length)).toLowerCase();
                                 //if(this[propertyName+'Render']!=null){ //todo 为了效率考虑 只有该属性定义了对应的渲染方法 _xxxRender 才会检查该属性值是否发生了变化

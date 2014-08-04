@@ -9,7 +9,8 @@ wof.widget.TabItem = function () {
 
     this._version = '1.0';
 
-    this.setIsInside(true);
+    this.setIsComponent(false);
+    
     this.setPosition('static');
 
 
