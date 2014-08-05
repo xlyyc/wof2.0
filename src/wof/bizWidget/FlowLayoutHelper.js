@@ -7,6 +7,8 @@
 wof.bizWidget.FlowLayoutHelper = function () {
     this._version = '1.0';
 
+    this.setIsComponent(true);
+
     var onReceiveMessage = [];
     onReceiveMessage.push({id:'wof_object_resize',priority:99,method:'this._calcLayoutAndRender(message);'});
     onReceiveMessage.push({id:'wof.bizWidget.FlowLayout_resize',priority:99,method:'this._flowlayoutResize(message);'});
@@ -89,6 +91,7 @@ wof.bizWidget.FlowLayoutHelper.prototype = {
      */
     _flowlayoutResize: function(message){
         var obj = wof.util.ObjectManager.get(message.sender.id);
+        console.log(obj.getClassName());
         if(obj!=null && obj.getClassName()=='wof.bizWidget.FlowLayout'){
             obj.resize();
             obj.render();

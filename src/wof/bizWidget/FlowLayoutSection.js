@@ -14,6 +14,10 @@ wof.bizWidget.FlowLayoutSection = function () {
     this._backgroundImg = jQuery('<img src="src/img/backgroud.gif" style="position:absolute;cursor:pointer;opacity:0;filter:alpha(opacity=0);width:100%;height:100%;">');
 
 
+    var onReceiveMessage = [];
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_itemDrop', method:'this.itemDrop(message);'});
+    this.setOnReceiveMessage(onReceiveMessage);
+
 };
 wof.bizWidget.FlowLayoutSection.prototype = {
     /**
@@ -261,21 +265,20 @@ wof.bizWidget.FlowLayoutSection.prototype = {
         this.calcLayout();
     },
 
-    _insideOnReceiveMessage:{
-        'wof.bizWidget.FlowLayoutItem_itemDrop':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var insertItem = wof.util.ObjectManager.get(message.data.itemId);
-            var item = wof.util.ObjectManager.get(message.sender.id);
-            insertItem.remove();
-            insertItem.beforeTo(item);
+    //item位置互换
+    itemDrop:function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var insertItem = wof.util.ObjectManager.get(message.data.itemId);
+        var item = wof.util.ObjectManager.get(message.sender.id);
+        insertItem.remove();
+        insertItem.beforeTo(item);
 
-            this.calcLayout();
-            this.parentNode().calcLayout();
+        this.calcLayout();
+        this.parentNode().calcLayout();
 
-            this.parentNode().sendMessage('wof_object_resize');
-            this.parentNode().sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        }
+        this.parentNode().sendMessage('wof_object_resize');
+        this.parentNode().sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
     },
 
     //找到指定行列号的item

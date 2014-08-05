@@ -9,10 +9,16 @@ wof.bizWidget.FlowLayout = function () {
 
     this.setPosition('relative');
 
-    this.setIsComponent(false);
+    this.setIsComponent(true);
 
     var onReceiveMessage = [];
     onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this.newWidgetDrop(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_mousedown', method:'this.sectionMousedown(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_dblclick', method:'this.sectionDblclick(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_mousedown', method:'this.itemMousedown(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_dblclick', method:'this.itemDblclick(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_drop', method:'this.sectionDrop(message);'});
+
     this.setOnReceiveMessage(onReceiveMessage);
 
 
@@ -125,8 +131,8 @@ wof.bizWidget.FlowLayout.prototype = {
     //在item中创建新的widget对象
     newWidgetDrop : function(message){
         console.log(message.id+'   '+this.getClassName());
-        var obj = wof.util.ObjectManager.get(message.data.widgetId);
         var item = wof.util.ObjectManager.get(message.sender.id);
+        var obj = wof.util.ObjectManager.get(message.data.widgetId);
         var node = null;
         if(obj.getType()=='composite'){ //todo 复合构件
             var json = {};
@@ -146,10 +152,78 @@ wof.bizWidget.FlowLayout.prototype = {
         section.calcLayout();
         this.calcLayout();
 
-        //todo 需要让wof_object_resize真正被接收到
-        this.render(); //临时的解决
+        this.sendMessage('wof_object_resize');
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
+    },
+
+    sectionMousedown : function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var section = wof.util.ObjectManager.get(message.sender.id);
+        var sectionIndex = section.getIndex();
+        this.setActiveSectionIndex(sectionIndex);
+        this.setActiveItemRank(null);
+        this.render();
+
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
+    },
+
+    sectionDblclick : function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var section = wof.util.ObjectManager.get(message.sender.id);
+        if(section.getIsExpand()==true){
+            section.setIsExpand(false);
+        }else{
+            section.setIsExpand(true);
+        }
+        section.calcLayout();
+        this.calcLayout();
+        var sectionIndex = section.getIndex();
+        this.setActiveSectionIndex(sectionIndex);
+        this.setActiveItemRank(null);
 
         this.sendMessage('wof_object_resize');
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
+    },
+
+    itemMousedown:function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var item = wof.util.ObjectManager.get(message.sender.id);
+        var sectionIndex = item.parentNode().getIndex();
+        this.setActiveSectionIndex(sectionIndex);
+        this.setActiveItemRank({row:item.getRow(),col:item.getCol()});
+        this.render();
+
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
+    },
+
+    itemDblclick:function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var item = wof.util.ObjectManager.get(message.sender.id);
+        var sectionIndex = item.parentNode().getIndex();
+        this.setActiveSectionIndex(sectionIndex);
+        this.setActiveItemRank({row:item.getRow(),col:item.getCol()});
+        this.render();
+
+        this.sendMessage('wof.bizWidget.FlowLayout_active');
+        return false;
+    },
+
+    sectionDrop:function(message){
+        console.log(message.id+'   '+this.getClassName());
+        var insertSection = wof.util.ObjectManager.get(message.data.sectionId);
+        var section = wof.util.ObjectManager.get(message.sender.id);
+        insertSection.remove();
+        insertSection.beforeTo(section);
+        this.calcLayout();
+        var insertSectionIndex = section.getIndex();
+        this.setActiveSectionIndex(insertSectionIndex);
+        this.setActiveItemRank(null);
+        this.render();
+
         this.sendMessage('wof.bizWidget.FlowLayout_active');
         return false;
     },
@@ -165,99 +239,6 @@ wof.bizWidget.FlowLayout.prototype = {
             this.calcLayout();
 
             this.sendMessage('wof_object_resize');
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutItem_newWidgetDrop':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var obj = wof.util.ObjectManager.get(message.data.widgetId);
-            var item = wof.util.ObjectManager.get(message.sender.id);
-            var node = null;
-            if(obj.getType()=='composite'){
-                var json = {};
-                try{
-                    json = JSON.parse(getPageComponentTemplateById(obj.getValue()));
-                    node = eval('(new '+json.className+'())');     //todo 改用wof$方式
-                    node.setData(json);
-                }catch(e){
-                    alert(e);
-                }
-            }else{
-                node = eval('(new '+obj.getValue()+'()).createSelf('+item.getWidth()+','+item.getHeight()+');');
-            }
-            this.insertNode(node);
-
-            var section = this.findSectionByIndex(this.getActiveSectionIndex());
-            section.calcLayout();
-            this.calcLayout();
-
-            this.sendMessage('wof_object_resize');
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutSection_mousedown':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var section = wof.util.ObjectManager.get(message.sender.id);
-            var sectionIndex = section.getIndex();
-            this.setActiveSectionIndex(sectionIndex);
-            this.setActiveItemRank(null);
-            this.render();
-
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutSection_dblclick':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var section = wof.util.ObjectManager.get(message.sender.id);
-            if(section.getIsExpand()==true){
-                section.setIsExpand(false);
-            }else{
-                section.setIsExpand(true);
-            }
-            section.calcLayout();
-            this.calcLayout();
-            var sectionIndex = section.getIndex();
-            this.setActiveSectionIndex(sectionIndex);
-            this.setActiveItemRank(null);
-
-            this.sendMessage('wof_object_resize');
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutItem_mousedown':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var item = wof.util.ObjectManager.get(message.sender.id);
-            var sectionIndex = item.parentNode().getIndex();
-            this.setActiveSectionIndex(sectionIndex);
-            this.setActiveItemRank({row:item.getRow(),col:item.getCol()});
-            this.render();
-
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutItem_dblclick':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var item = wof.util.ObjectManager.get(message.sender.id);
-            var sectionIndex = item.parentNode().getIndex();
-            this.setActiveSectionIndex(sectionIndex);
-            this.setActiveItemRank({row:item.getRow(),col:item.getCol()});
-            this.render();
-
-            this.sendMessage('wof.bizWidget.FlowLayout_active');
-            return false;
-        },
-        'wof.bizWidget.FlowLayoutSection_drop':function(message){
-            console.log(message.id+'   '+this.getClassName());
-            var insertSection = wof.util.ObjectManager.get(message.data.sectionId);
-            var section = wof.util.ObjectManager.get(message.sender.id);
-            insertSection.remove();
-            insertSection.beforeTo(section);
-            this.calcLayout();
-            var insertSectionIndex = section.getIndex();
-            this.setActiveSectionIndex(insertSectionIndex);
-            this.setActiveItemRank(null);
-            this.render();
-
             this.sendMessage('wof.bizWidget.FlowLayout_active');
             return false;
         }

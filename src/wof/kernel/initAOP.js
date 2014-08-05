@@ -108,6 +108,22 @@ var wof$_aop = (function(){
                     obj[o].prototype.getClassName = function(){
                         return this._className;
                     };
+
+                    obj[o].prototype.getComponent = function(){
+                        var component = null;
+                        if(this.getIsComponent()!=true){ //如果自身不是构件对象 则查找自己所属的构件对象
+                            var parentNode = this;
+                            while((parentNode=parentNode.parentNode())!=null){
+                                if(parentNode.getIsComponent()==true){
+                                    component = parentNode;
+                                    break;
+                                }
+                            }
+                        }else{ //如果自身就是构件对象 则返回自己
+                            component = this;
+                        }
+                        return component;
+                    };
                     obj[o].prototype._id = null;
                     obj[o].prototype.getId = function(){
                         return this._id==null?(this._id=wof.util.Tool.uuid()):this._id;
@@ -142,8 +158,19 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._onReceiveMessageMethods = null;
                     obj[o].prototype.receiveMessage = function(message){
-                        if(this.getIsComponent() == true){
-                            //构件对象只能响应来自其他构件对象的消息 即只能响应isComponent为true的对象的消息
+                        //查找指定对象id的构件对象
+                        function findComponentId(id){
+                            var componentId = null;
+                            var parentNode = wof.util.ObjectManager.get(id);
+                            while((parentNode=parentNode.parentNode())!=null){
+                                if(parentNode.getIsComponent()==true){
+                                    componentId = parentNode.getId();
+                                    break;
+                                }
+                            }
+                            return componentId;
+                        }
+                        if(this.getIsComponent() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
                             if(message.sender.isComponent==true){
                                 if(this._onReceiveMessageMethods==null){
                                     this._onReceiveMessageMethods = {};
@@ -158,27 +185,31 @@ var wof$_aop = (function(){
                                         console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
                                     }
                                 }
+                            }else{
+                                var senderComponentId = findComponentId(message.sender.id);
+                                var receiverComponentId = this.getId();
+                                if(senderComponentId!=null&&senderComponentId==receiverComponentId) { //发送和接收者同属于一个构件对象
+                                    if(this._onReceiveMessageMethods==null){
+                                        this._onReceiveMessageMethods = {};
+                                    }
+                                    var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
+                                    if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
+                                        try{
+                                            var func = null;
+                                            eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
+                                            return func.apply(this,arguments);
+                                        }catch(e){
+                                            console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                                        }
+                                    }
+                                }
                             }
                         }else{
                             if(message.sender.isComponent!=true){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
-                                //查找指定对象id的构件对象
-                                function findComponentId(id){
-                                    var componentId = null;
-                                    var parentNode = wof.util.ObjectManager.get(id);
-                                    while((parentNode=parentNode.parentNode())!=null){
-                                        if(parentNode.getIsComponent()==true){
-                                            componentId = parentNode.getId();
-                                            break;
-                                        }
-                                    }
-                                    return componentId;
-                                }
                                 var senderComponentId = findComponentId(message.sender.id);
                                 var receiverComponentId = findComponentId(this.getId());
-                                console.log(senderComponentId+'    ======== '+receiverComponentId);
                                 if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
-                                    
-                                    //todo 需要做合并 并且此分支逻辑有待检验
+                                    //todo 需要做合并
                                     if(this._onReceiveMessageMethods==null){
                                         this._onReceiveMessageMethods = {};
                                     }
@@ -635,8 +666,8 @@ var wof$_aop = (function(){
 
                                 var propertyName = '_'+(funcName.substring(3, funcName.length)).toLowerCase();
                                 //if(this[propertyName+'Render']!=null){ //todo 为了效率考虑 只有该属性定义了对应的渲染方法 _xxxRender 才会检查该属性值是否发生了变化
-                                    console.log("111=="+JSON.stringify(this[propertyName])); //当前值
-                                    console.log('222=='+JSON.stringify(arguments[0])); //设置值
+                                    //.log("111=="+JSON.stringify(this[propertyName])); //当前值
+                                    //console.log('222=='+JSON.stringify(arguments[0])); //设置值
                                 //}
                                 this['__'+funcName].apply(this,arguments);
                             }

@@ -60,7 +60,6 @@
 <script src="src/wof/bizWidget/FlowLayoutSection.js"></script>
 <script src="src/wof/bizWidget/FlowLayoutItem.js"></script>
 <script src="src/wof/bizWidget/FlowLayoutHelper.js"></script>
-<script src="src/wof/bizWidget/FlowLayoutComponent.js"></script>
 <script src="src/wof/bizWidget/GridLayout.js"></script>
 <script src="src/wof/bizWidget/PropertyBar.js"></script>
 <script src="src/wof/bizWidget/ObjectBar.js"></script>
@@ -359,8 +358,6 @@ jQuery(function(){
     
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
 
-        var flowLayoutComponent = wof$.create('FlowLayoutComponent');
-
         var itemHeight = 70;
         var width = 811;
 
@@ -374,32 +371,10 @@ jQuery(function(){
         var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
         flowLayout.insertSection(sectionData1);
 
-        flowLayout.appendTo(flowLayoutComponent);
+        flowLayout.appendTo(content);
 
-        flowLayoutComponent.render();
+        flowLayout.render();
 
-        flowLayoutComponent.appendTo(content);
-
-
-        var button1 = wof$.create('Button');
-        button1.setLeft(0);
-        button1.setTop(0);
-        button1.setWidth(100);
-        button1.setHeight(30);
-        button1.setLabel('按钮1');
-        button1.appendTo(content);
-        
-        var button2 = wof$.create('Button');
-        button2.setLeft(400);
-        button2.setTop(200);
-        button2.setWidth(100);
-        button2.setHeight(30);
-        button2.setLabel('按钮2');
-        button2.appendTo(content);
-        
-        button1.render();
-        button2.render();
-        
     }
 	//重设工作区
 	function resizeContent(){

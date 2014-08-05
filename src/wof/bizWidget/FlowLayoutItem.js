@@ -144,6 +144,7 @@ wof.bizWidget.FlowLayoutItem.prototype = {
                                 _this.sendMessage('wof.bizWidget.FlowLayoutItem_newWidgetDrop', {'widgetId':ui.draggable.attr('oid')});
                             }
                         }else{
+                            alert(111);
                             var sectionIndex = _this.parentNode().getIndex();
                             _this.parentNode().parentNode().setActiveSectionIndex(sectionIndex);
                             _this.parentNode().parentNode().setActiveItemRank({row:_this.getRow(),col:_this.getCol()});
