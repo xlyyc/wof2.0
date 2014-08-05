@@ -170,38 +170,30 @@ var wof$_aop = (function(){
                             }
                             return componentId;
                         }
+                        var _this = this;
+                        function processMsg(message){
+                            if(_this._onReceiveMessageMethods==null){
+                                _this._onReceiveMessageMethods = {};
+                            }
+                            var onReceiveMessageFunc = _this._onReceiveMessageMethods[message.id];
+                            if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
+                                try{
+                                    var func = null;
+                                    eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
+                                    return func.apply(_this,arguments);
+                                }catch(e){
+                                    console.log(_this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                                }
+                            }
+                        }
                         if(this.getIsComponent() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
                             if(message.sender.isComponent==true){
-                                if(this._onReceiveMessageMethods==null){
-                                    this._onReceiveMessageMethods = {};
-                                }
-                                var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
-                                if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
-                                    try{
-                                        var func = null;
-                                        eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
-                                        return func.apply(this,arguments);
-                                    }catch(e){
-                                        console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
-                                    }
-                                }
+                                processMsg(message);
                             }else{
                                 var senderComponentId = findComponentId(message.sender.id);
                                 var receiverComponentId = this.getId();
                                 if(senderComponentId!=null&&senderComponentId==receiverComponentId) { //发送和接收者同属于一个构件对象
-                                    if(this._onReceiveMessageMethods==null){
-                                        this._onReceiveMessageMethods = {};
-                                    }
-                                    var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
-                                    if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
-                                        try{
-                                            var func = null;
-                                            eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
-                                            return func.apply(this,arguments);
-                                        }catch(e){
-                                            console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
-                                        }
-                                    }
+                                    processMsg(message);
                                 }
                             }
                         }else{
@@ -209,21 +201,7 @@ var wof$_aop = (function(){
                                 var senderComponentId = findComponentId(message.sender.id);
                                 var receiverComponentId = findComponentId(this.getId());
                                 if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
-                                    //todo 需要做合并
-                                    if(this._onReceiveMessageMethods==null){
-                                        this._onReceiveMessageMethods = {};
-                                    }
-                                    var onReceiveMessageFunc = this._onReceiveMessageMethods[message.id];
-                                    if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
-                                        try{
-                                            var func = null;
-                                            eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
-                                            return func.apply(this,arguments);
-                                        }catch(e){
-                                            console.log(this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
-                                        }
-                                    }
-                                    
+                                    processMsg(message);
                                 }
                             }
                         }
