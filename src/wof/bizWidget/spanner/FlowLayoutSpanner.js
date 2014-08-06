@@ -510,7 +510,6 @@ wof.bizWidget.spanner.FlowLayoutSpanner.prototype = {
                 }
             }else{
                 parameters.activeClass = 'FlowLayout';
-                parameters.componentName = flowLayout.getComponentName();
                 parameters.cols = flowLayout.getCols();
                 parameters.itemHeight = flowLayout.getItemHeight();
                 parameters.width = flowLayout.getWidth();
