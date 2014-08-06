@@ -27,25 +27,6 @@ var wof$_aop = (function(){
                             })(obj[o]['prototype'],p);
                         }
                     }*/
-                    
-                    //todo 需要移除 
-                    obj[o].prototype._componentName = null;
-                    obj[o].prototype.getComponentName = function() {
-                        return this._componentName || '';
-                    };
-                    obj[o].prototype.setComponentName = function(componentName) {
-                        this._componentName = componentName;
-                    };
-                    obj[o].prototype._componentId = null;
-                    obj[o].prototype.getComponentId = function() {
-                        return this._componentId || this.getId();
-                    };
-                    obj[o].prototype.setComponentId = function(componentId) {
-                        this._componentId = componentId;
-                    };
-                    
-                    
-
                     obj[o].prototype._version = null;
                     obj[o].prototype.getVersion = function(){
                         return this._version || '1.0';
@@ -136,72 +117,78 @@ var wof$_aop = (function(){
                         return this._domInstance;
                     };
                     obj[o].prototype.sendMessage = function(messageId, data){
-                        //如果有用户自定义的业务逻辑 先调用之 并根据返回值判断是否需要继续发送消息
-                        var f = true;
-                        if(this._onSendMessageMethods==null){
-                            this._onSendMessageMethods = {};
-                        }
-                        var onSendMessageFunc = this._onSendMessageMethods[messageId];
-                        if(onSendMessageFunc!=null){
-                            try{
-                                var func = null;
-                                eval('func=(function wof$_onSendMessageFunc(message){ '+onSendMessageFunc+' })');
-                                f = func.call(this,{'id':messageId, 'sender':this.getData(), 'data':data});
-                            }catch(e){
-                                console.log('执行业务['+messageId+']处理过程发生异常 原因:'+e);
+                        //只有被添加到对象结构图中的对象才可以发送消息
+                        if(wof.util.ObjectManager.get(this.getId())!=null){
+                            //如果有用户自定义的业务逻辑 先调用之 并根据返回值判断是否需要继续发送消息
+                            var f = true;
+                            if(this._onSendMessageMethods==null){
+                                this._onSendMessageMethods = {};
                             }
-                        }
-                        //如果业务逻辑返回值为true 则可以发送消息
-                        if(f!=false){
-                            wof.util.Observer.sendMessage({'id':messageId, 'sender':this.getData(), 'data':data});
+                            var onSendMessageFunc = this._onSendMessageMethods[messageId];
+                            if(onSendMessageFunc!=null){
+                                try{
+                                    var func = null;
+                                    eval('func=(function wof$_onSendMessageFunc(message){ '+onSendMessageFunc+' })');
+                                    f = func.call(this,{'id':messageId, 'sender':this.getData(), 'data':data});
+                                }catch(e){
+                                    console.log('执行业务['+messageId+']处理过程发生异常 原因:'+e);
+                                }
+                            }
+                            //如果业务逻辑返回值为true 则可以发送消息
+                            if(f!=false){
+                                wof.util.Observer.sendMessage({'id':messageId, 'sender':this.getData(), 'data':data});
+                            }
                         }
                     };
                     obj[o].prototype._onReceiveMessageMethods = null;
                     obj[o].prototype.receiveMessage = function(message){
-                        //查找指定对象id的构件对象
-                        function findComponentId(id){
-                            var componentId = null;
-                            var parentNode = wof.util.ObjectManager.get(id);
-                            while((parentNode=parentNode.parentNode())!=null){
-                                if(parentNode.getIsComponent()==true){
-                                    componentId = parentNode.getId();
-                                    break;
+                        //只有被添加到对象结构图中的对象才可以响应其监听的消息
+                        if(wof.util.ObjectManager.get(this.getId())!=null){
+                            //查找指定对象id的构件对象
+                            function findComponentId(id){
+                                var componentId = null;
+                                var parentNode = wof.util.ObjectManager.get(id);
+                                while((parentNode=parentNode.parentNode())!=null){
+                                    if(parentNode.getIsComponent()==true){
+                                        componentId = parentNode.getId();
+                                        break;
+                                    }
+                                }
+                                return componentId;
+                            }
+                            var _this = this;
+                            function processMsg(message){
+                                if(_this._onReceiveMessageMethods==null){
+                                    _this._onReceiveMessageMethods = {};
+                                }
+                                var onReceiveMessageFunc = _this._onReceiveMessageMethods[message.id];
+                                if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
+                                    try{
+                                        var func = null;
+                                        eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
+                                        return func.apply(_this,arguments);
+                                    }catch(e){
+                                        console.log(_this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                                    }
                                 }
                             }
-                            return componentId;
-                        }
-                        var _this = this;
-                        function processMsg(message){
-                            if(_this._onReceiveMessageMethods==null){
-                                _this._onReceiveMessageMethods = {};
-                            }
-                            var onReceiveMessageFunc = _this._onReceiveMessageMethods[message.id];
-                            if(onReceiveMessageFunc!=null){ //有相应的用户定制业务脚本处理 则直接调用
-                                try{
-                                    var func = null;
-                                    eval('func=(function wof$_onReceiveMessageFunc(message){ '+onReceiveMessageFunc+' })');
-                                    return func.apply(_this,arguments);
-                                }catch(e){
-                                    console.log(_this.getClassName()+'执行用户定制业务['+message.id+']脚本处理过程发生异常 原因:'+e);
+                            if(this.getIsComponent() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
+                                if(message.sender.isComponent==true){
+                                    processMsg(message);
+                                }else{
+                                    var senderComponentId = findComponentId(message.sender.id);
+                                    var receiverComponentId = this.getId();
+                                    if(senderComponentId!=null&&senderComponentId==receiverComponentId) { //发送和接收者同属于一个构件对象
+                                        processMsg(message);
+                                    }
                                 }
-                            }
-                        }
-                        if(this.getIsComponent() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
-                            if(message.sender.isComponent==true){
-                                processMsg(message);
                             }else{
-                                var senderComponentId = findComponentId(message.sender.id);
-                                var receiverComponentId = this.getId();
-                                if(senderComponentId!=null&&senderComponentId==receiverComponentId) { //发送和接收者同属于一个构件对象
-                                    processMsg(message);
-                                }
-                            }
-                        }else{
-                            if(message.sender.isComponent!=true){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
-                                var senderComponentId = findComponentId(message.sender.id);
-                                var receiverComponentId = findComponentId(this.getId());
-                                if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
-                                    processMsg(message);
+                                if(message.sender.isComponent!=true){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
+                                    var senderComponentId = findComponentId(message.sender.id);
+                                    var receiverComponentId = findComponentId(this.getId());
+                                    if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象
+                                        processMsg(message);
+                                    }
                                 }
                             }
                         }
@@ -312,6 +299,7 @@ var wof$_aop = (function(){
                             this.parentNode().childNodes().splice(idx,0,node);
                             node._parentNode = this.parentNode();
                         }else{
+                            //todo
                             console.log('警告:执行beforeTo方法出现问题[目标节点的父节点不存在]');
                         }
                     };
@@ -323,6 +311,7 @@ var wof$_aop = (function(){
                             this.parentNode().childNodes().splice(idx+1,0,node);
                             node._parentNode = this.parentNode();
                         }else{
+                            //todo
                             console.log('警告:执行afterTo方法出现问题[目标节点的父节点不存在]');
                         }
                     };
@@ -353,6 +342,7 @@ var wof$_aop = (function(){
                                 }
                             }
                         }else{
+                            //todo
                             console.log('警告:执行nextNode方法出现问题[目标节点的父节点不存在]');
                         }
                         return node;
@@ -436,8 +426,6 @@ var wof$_aop = (function(){
                         obj[o].prototype._getData = obj[o].prototype.getData;
                         obj[o].prototype.getData = function(){
                             var data=this._getData();
-                            data.componentId=this.getComponentId();
-                            data.componentName=this.getComponentName();
                             data.id=this.getId();
                             
                             data.isComponent = this.getIsComponent();
@@ -485,8 +473,6 @@ var wof$_aop = (function(){
                             if(data.left!=null){
                                 this.setLeft(data.left);
                             }
-                            this.setComponentId(data.componentId);
-                            this.setComponentName(data.componentName);
                             
                             this.setIsComponent(data.isComponent);
                             
@@ -496,7 +482,7 @@ var wof$_aop = (function(){
                             this.setZIndex(data.zIndex);
                             this.setScale(data.scale);
                             
-                            //设置监听和发送消息
+                            //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
                             var onSendMessage = [];
                             for(var i=0;i<data.onSendMessage.length;i++){
                                 onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
@@ -666,21 +652,3 @@ wof$_aop('wof.functionWidget');
 var wof$ = {};
 wof$.find = wof.util.Selector.find;
 wof$.create = wof.util.ObjectManager.create;
-wof$.getComponentIdByName = function(componentName){
-    try{
-        var componentId = '';
-        var objs = wof$.find('*');
-        for(var i=0;i<objs.size();i++){
-            var obj = objs.get(i);
-            if(obj.getComponentName!=null && obj.getComponentId!=null){
-                if(obj.getComponentName()==componentName){
-                    componentId = obj.getComponentId();
-                    break;
-                }
-            }
-        }
-        return componentId;
-    }catch(e){
-    }
-
-};

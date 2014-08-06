@@ -12,12 +12,12 @@ wof.bizWidget.FlowLayout = function () {
     this.setIsComponent(true);
 
     var onReceiveMessage = [];
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this.newWidgetDrop(message);'});
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_mousedown', method:'this.sectionMousedown(message);'});
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_dblclick', method:'this.sectionDblclick(message);'});
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_mousedown', method:'this.itemMousedown(message);'});
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_dblclick', method:'this.itemDblclick(message);'});
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_drop', method:'this.sectionDrop(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this._newWidgetDrop(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_mousedown', method:'this._sectionMousedown(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_dblclick', method:'this._sectionDblclick(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_mousedown', method:'this._itemMousedown(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_dblclick', method:'this._itemDblclick(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_drop', method:'this._sectionDrop(message);'});
 
     this.setOnReceiveMessage(onReceiveMessage);
 
@@ -129,7 +129,7 @@ wof.bizWidget.FlowLayout.prototype = {
     },
 
     //在item中创建新的widget对象
-    newWidgetDrop : function(message){
+    _newWidgetDrop : function(message){
         console.log(message.id+'   '+this.getClassName());
         var item = wof.util.ObjectManager.get(message.sender.id);
         var obj = wof.util.ObjectManager.get(message.data.widgetId);
@@ -152,12 +152,14 @@ wof.bizWidget.FlowLayout.prototype = {
         section.calcLayout();
         this.calcLayout();
 
+        this.render();
+
         this.sendMessage('wof_object_resize');
         this.sendMessage('wof.bizWidget.FlowLayout_active');
         return false;
     },
 
-    sectionMousedown : function(message){
+    _sectionMousedown : function(message){
         console.log(message.id+'   '+this.getClassName());
         var section = wof.util.ObjectManager.get(message.sender.id);
         var sectionIndex = section.getIndex();
@@ -169,7 +171,7 @@ wof.bizWidget.FlowLayout.prototype = {
         return false;
     },
 
-    sectionDblclick : function(message){
+    _sectionDblclick : function(message){
         console.log(message.id+'   '+this.getClassName());
         var section = wof.util.ObjectManager.get(message.sender.id);
         if(section.getIsExpand()==true){
@@ -188,7 +190,7 @@ wof.bizWidget.FlowLayout.prototype = {
         return false;
     },
 
-    itemMousedown:function(message){
+    _itemMousedown:function(message){
         console.log(message.id+'   '+this.getClassName());
         var item = wof.util.ObjectManager.get(message.sender.id);
         var sectionIndex = item.parentNode().getIndex();
@@ -200,7 +202,7 @@ wof.bizWidget.FlowLayout.prototype = {
         return false;
     },
 
-    itemDblclick:function(message){
+    _itemDblclick:function(message){
         console.log(message.id+'   '+this.getClassName());
         var item = wof.util.ObjectManager.get(message.sender.id);
         var sectionIndex = item.parentNode().getIndex();
@@ -212,7 +214,7 @@ wof.bizWidget.FlowLayout.prototype = {
         return false;
     },
 
-    sectionDrop:function(message){
+    _sectionDrop:function(message){
         console.log(message.id+'   '+this.getClassName());
         var insertSection = wof.util.ObjectManager.get(message.data.sectionId);
         var section = wof.util.ObjectManager.get(message.sender.id);

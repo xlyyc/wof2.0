@@ -16,10 +16,7 @@ wof.bizWidget.ObjectBar.prototype={
     _compositeComponents: null,
 
     getWidgetComponents: function(){
-        if(this._widgetComponents==null){
-            this._widgetComponents = [];
-        }
-        return this._widgetComponents;
+        return this._widgetComponents || [];
     },
 
     setWidgetComponents: function(widgetComponents){
@@ -38,10 +35,7 @@ wof.bizWidget.ObjectBar.prototype={
     },
 
     getLayoutComponents: function(){
-        if(this._layoutComponents==null){
-            this._layoutComponents = [];
-        }
-        return this._layoutComponents;
+        return this._layoutComponents || [];
     },
 
     getBaseComponents: function(){
@@ -57,10 +51,7 @@ wof.bizWidget.ObjectBar.prototype={
     },
 
     getCompositeComponents: function(){
-        if(this._compositeComponents==null){
-            this._compositeComponents = [];
-        }
-        return this._compositeComponents;
+        return this._compositeComponents || [];
     },
 
     setCompositeComponents: function(compositeComponents){

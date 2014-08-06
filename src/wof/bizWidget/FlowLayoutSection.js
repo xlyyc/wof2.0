@@ -15,7 +15,7 @@ wof.bizWidget.FlowLayoutSection = function () {
 
 
     var onReceiveMessage = [];
-    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_itemDrop', method:'this.itemDrop(message);'});
+    onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_itemDrop', method:'this._itemDrop(message);'});
     this.setOnReceiveMessage(onReceiveMessage);
 
 };
@@ -266,7 +266,7 @@ wof.bizWidget.FlowLayoutSection.prototype = {
     },
 
     //item位置互换
-    itemDrop:function(message){
+    _itemDrop:function(message){
         console.log(message.id+'   '+this.getClassName());
         var insertItem = wof.util.ObjectManager.get(message.data.itemId);
         var item = wof.util.ObjectManager.get(message.sender.id);

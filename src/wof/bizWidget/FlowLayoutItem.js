@@ -144,7 +144,7 @@ wof.bizWidget.FlowLayoutItem.prototype = {
                                 _this.sendMessage('wof.bizWidget.FlowLayoutItem_newWidgetDrop', {'widgetId':ui.draggable.attr('oid')});
                             }
                         }else{
-                            alert(111);
+                            alert('貌似此段代码不会被执行');
                             var sectionIndex = _this.parentNode().getIndex();
                             _this.parentNode().parentNode().setActiveSectionIndex(sectionIndex);
                             _this.parentNode().parentNode().setActiveItemRank({row:_this.getRow(),col:_this.getCol()});
@@ -166,11 +166,13 @@ wof.bizWidget.FlowLayoutItem.prototype = {
             start:function(event,ui){
                 event.stopPropagation();
                 clearTimeout(_this._timeFn);
-                _this.getDomInstance().css('zIndex',60000);
+                _this.setZIndex(60000);
+                //_this.getDomInstance().css('zIndex',60000);
             },
             stop:function(event,ui){
                 event.stopPropagation();
-                _this.getDomInstance().css('zIndex','auto');
+                _this.setZIndex('auto');
+                //_this.getDomInstance().css('zIndex','auto');
             }
         });
 

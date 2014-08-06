@@ -21,6 +21,7 @@ wof.widget.Button.prototype = {
     _label: null,           //文字
     _icon: null,            //语义层面的ICON标识，对应图标的类型(add/edit)、颜色(white/black)、位置属性(position:left/right/top/bottom)
     _disabled: null,        //禁用
+    _type:null,             //类型 button 普通按钮(默认) submit 提交按钮 reset 重设按钮
 
     /**
      * get/set 属性方法定义
@@ -55,13 +56,15 @@ wof.widget.Button.prototype = {
     },
 
     setDisabled: function (disabled) {
-        this._disabled = ( typeof disabled ) === "boolean" ? disabled : false;
+        this._disabled = disabled;
     },
 
+    getType: function () {
+        return this._type || 'button';
+    },
 
-    //label属性对应的渲染方法
-    _labelRender: function(){
-        alert('我是_labelRender 我被调用了');
+    setType: function (type) {
+        this._type = type;
     },
 
     /**
@@ -70,7 +73,7 @@ wof.widget.Button.prototype = {
     //渲染初始化 仅在第一次调用render时执行
     _initRender: function () {
         var _this = this;
-        this._btn = jQuery('<button>');
+        this._btn = jQuery('<button type="'+this.getType()+'">');
         this.getDomInstance().append(this._btn);
 
     },
@@ -114,7 +117,8 @@ wof.widget.Button.prototype = {
             name: this.getName(),
             label: this.getLabel(),
             icon: this.getIcon(),
-            disabled: this.getDisabled()
+            disabled: this.getDisabled(),
+            type:this.getType()
         };
     },
     //----------必须实现----------
@@ -123,6 +127,7 @@ wof.widget.Button.prototype = {
         this.setLabel(data.label);
         this.setIcon(data.icon);
         this.setDisabled(data.disabled);
+        this.setType(data.type);
     },
 
     //创建初始化的button

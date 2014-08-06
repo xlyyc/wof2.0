@@ -6,7 +6,6 @@
  */
 
 wof.widget.CheckBox = function () {
-    this._version = '1.0';
 
 };
 
@@ -16,29 +15,24 @@ wof.widget.CheckBox.prototype = {
      */
     _name: null,  //复选框的名称
     _value: null, //复选框的值
-    _themes:null,
     _label: null, //复选框的文字
-    //_customValidate: null,//自定义验证器
     _disabled: null, //禁用
     _checked: null, //选中
        
     _checkbox:null,
+    _checkboxLabel:null,
+
     /**
      * get/set 属性方法定义
      */
     getName: function () {
-        return this._name;
+        return this._name || '';
     },
 
     setName: function (name) {
         this._name = name;
     },
-    getThemes: function () {
-        return this._themes;
-    },
-    setThemes: function (themes) {
-        this._themes = themes;
-    },
+
     getValue: function () {
         return this._value || '';
     },
@@ -56,7 +50,7 @@ wof.widget.CheckBox.prototype = {
     },
 
     getDisabled: function () {
-        return this._disabled;
+        return this._disabled==null?false:this._disabled;
     },
 
     setDisabled: function (disabled) {
@@ -64,7 +58,7 @@ wof.widget.CheckBox.prototype = {
     },
 
     getChecked: function () {
-        return this._checked;
+        return this._checked==null?false:this._checked;
     },
 
     setChecked: function (checked) {
@@ -82,26 +76,21 @@ wof.widget.CheckBox.prototype = {
     },
     _initRender: function () {
         var _this = this;
-        this._checkbox = wis$.create('Checkbox');
-        this._checkbox.onClick(
-            function(obj){
-                _this.setValue(obj.getValue());
-                _this.sendMessage('wof.widget.Checkbox_click');// 点击事件
-            }
-        );
-        this._checkbox.onSelect(
-            function(obj){
-                _this.setValue(obj.getValue());
-                _this.sendMessage('wof.widget.Checkbox_select'); // 选中事件
-            }
-        );
-        this._checkbox.onChange(
-            function(obj){
-                _this.setValue(obj.getValue());
-                _this.sendMessage('wof.widget.Checkbox_change'); // 改变事件
-            }
-        );
-        this.getDomInstance().append(this._checkbox.getDomInstance());
+        this._checkbox = jQuery('<input type="checkbox">');
+        this._checkbox.click(function(event) {
+            event.stopPropagation();
+            _this.sendMessage('wof.widget.Checkbox_click');
+        });
+        this._checkbox.focus(function(event) {
+            event.stopPropagation();
+            _this.sendMessage('wof.widget.Checkbox_focus');
+        });
+        this._checkbox.blur(function(event) {
+            event.stopPropagation();
+            _this.sendMessage('wof.widget.Checkbox_blur');
+        });
+        this._checkboxLabel = jQuery('<label>');
+        this.getDomInstance().append(this._checkbox).append(this._checkboxLabel);
     },
     //选择实现
     _beforeRender: function () {
@@ -110,54 +99,19 @@ wof.widget.CheckBox.prototype = {
 
     //----------必须实现----------
     render: function () {
-        this._checkbox.setName(this.getName());
-        this._checkbox.setValue(this.getValue());
-        this._checkbox.setLabel(this.getLabel());
-        this._checkbox.setDisabled(this.getDisabled());
-        this._checkbox.setChecked(this.getChecked());
+        this._checkbox.attr('name',this.getName());
+        this._checkbox.attr('value',this.getValue());
+        this._checkbox.attr('disabled',this.getDisabled());
+        this._checkbox.attr('checked',this.getChecked());
+        this._checkboxLabel.text(this.getLabel());
     },
 
     //选择实现
     _afterRender: function () {
-        this._checkbox.render();
+
         this.sendMessage('wof.widget.Checkbox_render');
     },
-    //----------自定义实现----------
-	getOptions: function () {
-		return {
-            name: this.getName(),
-            themes:this.getThemes(),
-            label: this.getLabel(),
-            value: this.getValue(),
-            disabled: this.getDisabled(),
-            checked: this.getChecked()
-        }
-    },
 
-    //----------自定义实现(进行必要的校验和默认值设置)----------
-    setOptions: function (data) {
-    	if (!data) {
-    		return;
-    	}
-	    if(data.name){
-			this.setName(data.name);
-		}
-	    if(data.themes){
-	    	this.setThemes(data.themes);
-	    }
-        if(data.value){
-    		this.setValue(data.value);
-    	}
-        if(data.label){
-    		this.setLabel(data.label);
-    	}
-        if(data.disabled){
-    		this.setDisabled(data.disabled);
-    	}
-        if(data.checked){
-    		this.setChecked(data.checked);
-    	}
-    },
     /**
      * getData/setData 方法定义
      */
@@ -166,36 +120,28 @@ wof.widget.CheckBox.prototype = {
     getData: function () {
     	return {
     		 name: this.getName(),
-             themes:this.getThemes(),
              label: this.getLabel(),
              value: this.getValue(),
              disabled: this.getDisabled(),
              checked: this.getChecked()
         }
     },
+
     //----------必须实现----------
     setData: function (data) {
-    	if (!data) {
-    		return;
-    	}
-	    if(data.name){
-			this.setName(data.name);
-		}
-	    if(data.themes){
-	    	this.setThemes(data.themes);
-	    }
-        if(data.value){
-    		this.setValue(data.value);
-    	}
-        if(data.label){
-    		this.setLabel(data.label);
-    	}
-        if(data.disabled){
-    		this.setDisabled(data.disabled);
-    	}
-        if(data.checked){
-    		this.setChecked(data.checked);
-    	}
+        this.setName(data.name);
+        this.setValue(data.value);
+        this.setLabel(data.label);
+        this.setDisabled(data.disabled);
+        this.setChecked(data.checked);
+    },
+
+//创建初始化的button
+    createSelf: function (width, height) {
+        var node = wof$.create('CheckBox');
+        node.setLabel('复选框标题');
+        return node;
     }
+
 
 };

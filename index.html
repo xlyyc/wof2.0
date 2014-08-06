@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<title>业务设计器</title>
+<title>表单设计器</title>
 <link href="lib/jquery.ui/themes/redmond/jquery-ui.min.css" rel="stylesheet">
 <link href="lib/jquery.ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
 <link href="lib/jquery.ui.multiselect/css/jquery.multiselect.css" rel="stylesheet">
@@ -52,9 +52,13 @@
 <script src="src/wof/widget/Button.js"></script>
 <script src="src/wof/widget/Label.js"></script>
 <script src="src/wof/widget/Tree.js"></script>
+<script src="src/wof/widget/Textfield.js"></script>
+<script src="src/wof/widget/CheckBox.js"></script>
 
 <script src="src/wof/widget/spanner/ButtonSpanner.js"></script>
 <script src="src/wof/widget/spanner/TabSpanner.js"></script>
+<script src="src/wof/widget/spanner/TextfieldSpanner.js"></script>
+<script src="src/wof/widget/spanner/CheckBoxSpanner.js"></script>
 
 <script src="src/wof/bizWidget/FlowLayout.js"></script>
 <script src="src/wof/bizWidget/FlowLayoutSection.js"></script>
@@ -197,6 +201,18 @@ jQuery(function(){
         baseComponents.push(buttonSpanner);
         wof_components.push(buttonSpanner);
 
+        var textfieldSpanner = wof$.create('TextfieldSpanner');
+        textfieldSpanner.appendTo(gridLayout1);
+        baseComponents.push(textfieldSpanner);
+        wof_components.push(textfieldSpanner);
+
+        var checkBoxSpanner = wof$.create('CheckBoxSpanner');
+        checkBoxSpanner.appendTo(gridLayout1);
+        baseComponents.push(checkBoxSpanner);
+        wof_components.push(checkBoxSpanner);
+
+
+
         //var tabSpanner = wof$.create('TabSpanner');
         //tabSpanner.appendTo(gridLayout1);
         //widgetComponents.push(tabSpanner);
@@ -252,8 +268,6 @@ jQuery(function(){
         objectInspector.setTop(0);
         objectInspector.setLeft(0);
         objectInspector.appendTo(gridLayout2);*/
-
-
 
         tab.render();
 	}
@@ -355,9 +369,6 @@ jQuery(function(){
 	//初始化工作区
 	function initContent(){
 
-    
-        var flowLayoutHelper = wof$.create('FlowLayoutHelper');
-
         var itemHeight = 70;
         var width = 811;
 
@@ -371,9 +382,12 @@ jQuery(function(){
         var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
         flowLayout.insertSection(sectionData1);
 
+        flowLayout.render();
+
         flowLayout.appendTo(content);
 
-        flowLayout.render();
+        var flowLayoutHelper = wof$.create('FlowLayoutHelper');
+        flowLayoutHelper.appendTo(content);
 
     }
 	//重设工作区
