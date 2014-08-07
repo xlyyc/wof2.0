@@ -134,15 +134,21 @@ wof.bizWidget.FlowLayout.prototype = {
         var item = wof.util.ObjectManager.get(message.sender.id);
         var obj = wof.util.ObjectManager.get(message.data.widgetId);
         var node = null;
-        if(obj.getType()=='composite'){ //todo 复合构件
+        if(obj.getType()=='composite'){ //复合构件
             var json = {};
-            try{
-                json = JSON.parse(getPageComponentTemplateById(obj.getValue()));
-                node = eval('(new '+json.className+'())');     //todo 改用wof$方式
-                node.setData(json);
-            }catch(e){
-                alert(e);
-            }
+            jQuery.ajax({
+                url: 'compositeComponent/'+obj.getValue()+'.json',
+                type: 'get',
+                async: false,
+                dataType:'json',
+                success:function(data){
+                    node = eval('(new '+data.className+'())');
+                    node.setData(data);
+                },
+                error:function(e){
+                    alert('获取构件组合数据发生错误:'+e);
+                }
+            });
         }else{
             node = eval('(new '+obj.getValue()+'()).createSelf('+item.getWidth()+','+item.getHeight()+');');
         }

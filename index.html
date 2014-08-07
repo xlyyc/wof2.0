@@ -231,10 +231,27 @@ jQuery(function(){
             }
         }
 
+        //获得构件组合数据
         var compositeComponentsData = [];
         try{
-            compositeComponentsData = JSON.parse(pageComponentTemplateList());
+            jQuery.ajax({
+                url: 'compositeComponent/compositeComponent.js',
+                type: 'get',
+                async: false,
+                dataType:'text',
+                success:function(data){
+                    var ds = data.split("@wof@");
+                    for(var i=0;i<((ds.length-1)/2);i++){
+                        var cc = {id:ds[i*2],label:ds[i*2+1]};
+                        compositeComponentsData.push(cc);
+                    }
+                },
+                error:function(e){
+                    alert('获取构件组合数据发生错误:'+e);
+                }
+            });
         }catch(e){
+            alert(e);
         }
         var objectBar = wof$.create('ObjectBar');
         objectBar.setCompositeComponents(compositeComponentsData);
@@ -368,24 +385,43 @@ jQuery(function(){
 	}
 	//初始化工作区
 	function initContent(){
+        var node = null;
+        //读取元数据
+        jQuery.ajax({
+            url: 'data.json',
+            type: 'get',
+            async: false,
+            dataType:'json',
+            success:function(data){
+                node = eval('(new '+data.className+'())');
+                node.setData(data);
+                node.render();
+                node.appendTo(content);
+            },
+            error:function(e){
+                alert('读取元数据发生错误:'+e);
+            }
+        });
+        //如果元数据不存在
+        if(node==null){
+            var itemHeight = 70;
+            var width = 811;
 
-        var itemHeight = 70;
-        var width = 811;
+            var flowLayout = wof$.create('FlowLayout');
+            flowLayout.setLeft(0);
+            flowLayout.setTop(0);
+            flowLayout.setWidth(width);
+            flowLayout.setItemHeight(itemHeight);
+            flowLayout.setCols(4);
 
-        var flowLayout = wof$.create('FlowLayout');
-        flowLayout.setLeft(0);
-        flowLayout.setTop(0);
-        flowLayout.setWidth(width);
-        flowLayout.setItemHeight(itemHeight);
-        flowLayout.setCols(4);
+            var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
+            flowLayout.insertSection(sectionData1);
 
-        var sectionData1 = {title:'默认分组1',width:width,titleHeight:30,cols:2,itemHeight:300};
-        flowLayout.insertSection(sectionData1);
+            flowLayout.render();
 
-        flowLayout.render();
-
-        flowLayout.appendTo(content);
-
+            flowLayout.appendTo(content);
+        }
+        //不管是恢复和默认初始化的表单 都需要流式布局的助手对象 以便自适应屏幕
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
         flowLayoutHelper.appendTo(content);
 
@@ -414,72 +450,37 @@ jQuery(function(){
 		resizeSidebar2();
         resizeContent();
 	});
-	jQuery("#pageParamBtn,#saveBtn,#saveToCompositeComponentBtn").button().click(function(event){
+	jQuery('#pageParamBtn,#saveBtn,#saveToCompositeComponent,#saveToComponent').button().click(function(event){
 		event.preventDefault();
 		var id = jQuery(event.target).attr('id');
         if(id=='pageParamBtn'){
             wof.customWindow.PageParamWindow.run();
         }else if(id=='saveBtn'){
-
-            var json = {};
 			var layout = getContentLayout();
-
-            //将叶子节点数据拉平导出
-            var _components = [];
-            var _commandComponents = [];
-            function _getLeafData(node){
-                var clz = node.getClassName();
-                var shortName = clz.substring(clz.lastIndexOf('.')+1);
-                var package =  clz.substring(0,clz.lastIndexOf(shortName)-1);
-                var spann = eval(package+'.spanner.'+shortName+'Spanner');
-                if(spann!=null){
-                    if(spann.prototype.exportData!=null){
-                        if(clz.indexOf('wof.bizWidget')>=0){
-                            var componentData = {};
-                            componentData['ID'] = node.getComponentId();
-                            componentData['CallStr'] = node.getCallStr();
-                            componentData['ControlType'] = shortName;
-                            componentData['ControlContext'] = spann.prototype.exportData(node);
-                            _components.push(componentData);
-                        }else{
-                            _commandComponents.push(spann.prototype.exportData(node));
-                        }
-                    }
+            jQuery.ajax({
+                url: 'save.jsp',
+                type: 'post',
+                dataType:'text',
+                data: {
+                    'data':layout.toJSON()
+                },
+                success:function(data){
+                    alert(data);
+                },
+                error:function(e){
+                    alert('保存发生错误:'+e);
                 }
-                var childNodes = node.childNodes();
-                if(childNodes.length>0){
-                    for(var i=0; i<childNodes.length; i++){
-                        _getLeafData(childNodes[i]);
-                    }
-                }
-            }
-
-            _getLeafData(layout);
-
-            var _inputParam = [];
-            function _getInputParam(){
-                for(var name in pageInputParam){
-                    _inputParam.push(pageInputParam[name]);
-                }
-            }
-		
-            _getInputParam();
-
-            json.inputParam = _inputParam;
-            json.components = _components;
-            json.commandComponents = _commandComponents;
-            json.layout = layout.getData();
-
-            console.log(JSON.stringify(json)); //导出元数据
-		}else if(id=='saveToCompositeComponentBtn'){
-            jQuery('#dialog-form').dialog({
+            });
+            console.log(layout.toJSON()); //导出元数据
+		}else if(id=='saveToCompositeComponent'){
+            jQuery('#compositeComponent_dialog_form').dialog({
                 autoOpen: false,
                 height:200,
                 width: 300,
                 modal: true,
                 buttons:{
                     '保存':function(){
-                        var name = jQuery('#dialog_form_name').val();
+                        var name = jQuery('#compositeComponent_dialog_name').val();
                         if(name!=null&&name.length>0){
                             var templateData = null;
                             var cutObj = wof$.find('#'+(wof.util.GlobalObject.get('cutObjectId'))).get(0);
@@ -492,8 +493,25 @@ jQuery(function(){
                             }else{
                                 templateData = getContentLayout().getData();
                             }
-
-                            console.log('模板名称:'+name+'  模板元数据:'+JSON.stringify(templateData)); //导出模板元数据
+                            jQuery.ajax({
+                                url: 'saveCompositeComponent.jsp',
+                                type: 'post',
+                                dataType:'text',
+                                data: {
+                                    'id':wof.util.Tool.uuid(),
+                                    'name':name,
+                                    'data':JSON.stringify(templateData)
+                                },
+                                success:function(data){
+                                    alert(data);
+                                },
+                                error:function(e){
+                                    alert('保存构件组合元数据发生错误:'+e);
+                                },
+                                complete:function(){
+                                    console.log('构件组合名称:'+name+'  构件组合元数据:'+JSON.stringify(templateData));
+                                }
+                            });
                         }
                         jQuery(this).dialog('close');
                     },
@@ -502,7 +520,38 @@ jQuery(function(){
                     }
                 }
             });
-            jQuery('#dialog-form').dialog('open');
+            jQuery('#compositeComponent_dialog_form').dialog('open');
+        }else if(id=='saveToComponent'){
+            jQuery('#component_dialog_form').dialog({
+                autoOpen: false,
+                height:200,
+                width: 300,
+                modal: true,
+                buttons:{
+                    '保存':function(){
+                        var name = jQuery('#component_dialog_name').val();
+                        if(name!=null&&name.length>0){
+                            var templateData = null;
+                            var cutObj = wof$.find('#'+(wof.util.GlobalObject.get('cutObjectId'))).get(0);
+                            if(cutObj!=null){
+                                if(window.confirm('是否只保存剪切板中的内容？')){
+                                    templateData = cutObj.getData();
+                                }else{
+                                    templateData = getContentLayout().getData();
+                                }
+                            }else{
+                                templateData = getContentLayout().getData();
+                            }
+                            console.log(JSON.stringify(templateData));
+                        }
+                        jQuery(this).dialog('close');
+                    },
+                    '关闭':function(){
+                        jQuery(this).dialog('close');
+                    }
+                }
+            });
+            jQuery('#component_dialog_form').dialog('open');
         }
 	});
 });
@@ -519,7 +568,8 @@ var pageInputParam = {};
 	<div id="header" style="position:absolute;background-color:#fff;border-bottom:1px solid black;z-index:90000">
         <input type="button" id="pageParamBtn" value="页面参数" />
         <input type="button" id="saveBtn" value="保存" />
-        <input type="button" id="saveToCompositeComponentBtn" value="保存为模板" />
+        <input type="button" id="saveToCompositeComponent" value="保存为构件组合" />
+        <input type="button" id="saveToComponent" value="保存为业务构件" />
     </div>
 	<div id="sidebar1" style="position:absolute;z-index:90000;">
     	
@@ -532,9 +582,15 @@ var pageInputParam = {};
     </div>
 </div>
 
-<div id="dialog-form" title="保存为模板">
+<div id="compositeComponent_dialog_form" title="保存为构件组合">
     <p class="validateTips">名称</p>
-    <p><input type="text" id="dialog_form_name" class="text" /></p>
+    <p><input type="text" id="compositeComponent_dialog_name" class="text" /></p>
 </div>
+
+<div id="component_dialog_form" title="保存为业务构件">
+    <p class="validateTips">名称</p>
+    <p><input type="text" id="component_dialog_name" class="text" /></p>
+</div>
+
 </body>
 </html>

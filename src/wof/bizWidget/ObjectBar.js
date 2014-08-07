@@ -149,7 +149,7 @@ wof.bizWidget.ObjectBar.prototype={
             var toolbarItem2 = wof$.create('ToolbarItem');
             toolbarItem2.setIsComponent(false);
             toolbarItem2.setTitle('功能构件');
-            toolbarItem2.setName('base');
+            toolbarItem2.setName('fun');
             toolbarItem2.appendTo(toolbar);
             for(var i=0;i<widgetComponents.length;i++){
                 var widget = widgetComponents[i];
@@ -187,7 +187,7 @@ wof.bizWidget.ObjectBar.prototype={
             var toolbarItem3 = wof$.create('ToolbarItem');
             toolbarItem3.setIsComponent(false);
             toolbarItem3.setTitle('基础构件');
-            toolbarItem3.setName('composite');
+            toolbarItem3.setName('base');
             toolbarItem3.appendTo(toolbar);
             for(var i=0;i<baseComponents.length;i++){
                 var widget = baseComponents[i];
