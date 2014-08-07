@@ -1,0 +1,222 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>表单运行时</title>
+<link href="lib/jquery.ui/themes/redmond/jquery-ui.min.css" rel="stylesheet">
+<link href="lib/jquery.ztree/css/zTreeStyle/zTreeStyle.css" rel="stylesheet">
+<link href="lib/jquery.ui.multiselect/css/jquery.multiselect.css" rel="stylesheet">
+<link href="lib/jquery.ui.multiselect/css/jquery.multiselect.filter.css" rel="stylesheet">
+<style type="text/css">
+<!--
+	* {
+		margin:0;
+		padding:0;
+	}
+	body{
+		font: 12px "Trebuchet MS", sans-serif;
+	}
+-->
+</style>
+<script src="lib/jquery/jquery.min.js"></script>
+<script src="lib/jquery.ui/jquery-ui-1.10.1.custom.min.js"></script>
+<script src="lib/jquery.ui.multiselect/js/jquery.multiselect.min.js"></script>
+<script src="lib/jquery.ui.multiselect/js/jquery.multiselect.filter.min.js"></script>
+<script src="lib/jquery.ztree/js/jquery.ztree.all-3.5.js"></script>
+<script src="lib/json2.js"></script>
+<script src="lib/fixConsole.js"></script>
+<script src="lib/jsonpath-0.8.0.js"></script>
+<script src="src/wof/kernel/initNamespace.js"></script>
+
+<script src="src/wof/util/Hashtable.js"></script>
+<script src="src/wof/util/ObjectManager.js"></script>
+<script src="src/wof/util/Observer.js"></script>
+<script src="src/wof/util/ArrayList.js"></script>
+<script src="src/wof/util/Selector.js"></script>
+<script src="src/wof/util/SelectorList.js"></script>
+<script src="src/wof/util/GlobalObject.js"></script>
+<script src="src/wof/util/Tool.js"></script>
+
+<script src="src/wof/widget/Mediator.js"></script>
+
+<script src="src/wof/customWindow/MetaTreeSelector.js"></script>
+<script src="src/wof/customWindow/ComponentTreeSelector.js"></script>
+<script src="src/wof/customWindow/ParamMapsWindow.js"></script>
+<script src="src/wof/customWindow/PageParamWindow.js"></script>
+<script src="src/wof/customWindow/PageFormSelector.js"></script>
+
+<script src="src/wof/widget/Tab.js"></script>
+<script src="src/wof/widget/TabItem.js"></script>
+<script src="src/wof/widget/Toolbar.js"></script>
+<script src="src/wof/widget/ToolbarItem.js"></script>
+<script src="src/wof/widget/Button.js"></script>
+<script src="src/wof/widget/Label.js"></script>
+<script src="src/wof/widget/Tree.js"></script>
+<script src="src/wof/widget/Textfield.js"></script>
+<script src="src/wof/widget/CheckBox.js"></script>
+
+<script src="src/wof/widget/spanner/ButtonSpanner.js"></script>
+<script src="src/wof/widget/spanner/TabSpanner.js"></script>
+<script src="src/wof/widget/spanner/TextfieldSpanner.js"></script>
+<script src="src/wof/widget/spanner/CheckBoxSpanner.js"></script>
+
+<script src="src/wof/bizWidget/FlowLayout.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutSection.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutItem.js"></script>
+<script src="src/wof/bizWidget/FlowLayoutHelper.js"></script>
+<script src="src/wof/bizWidget/GridLayout.js"></script>
+<script src="src/wof/bizWidget/PropertyBar.js"></script>
+<script src="src/wof/bizWidget/ObjectBar.js"></script>
+<script src="src/wof/bizWidget/OnSendMessageBar.js"></script>
+<script src="src/wof/bizWidget/OnReceiveMessageBar.js"></script>
+<script src="src/wof/bizWidget/VoucherComponent.js"></script>
+<script src="src/wof/bizWidget/VoucherItemGroup.js"></script>
+<script src="src/wof/bizWidget/VoucherItem.js"></script>
+<script src="src/wof/bizWidget/BizEntityTree.js"></script>
+<script src="src/wof/bizWidget/PageFormTree.js"></script>
+<script src="src/wof/bizWidget/ComponentsTree.js"></script>
+<script src="src/wof/bizWidget/ParamWindow.js"></script>
+<script src="src/wof/bizWidget/PageParamWindow.js"></script>
+
+<script src="src/wof/bizWidget/spanner/GridLayoutSpanner.js"></script>
+<script src="src/wof/bizWidget/spanner/FlowLayoutSpanner.js"></script>
+<script src="src/wof/bizWidget/spanner/VoucherComponentSpanner.js"></script>
+<script src="src/wof/bizWidget/ObjectInspector.js"></script>
+
+<script src="src/wof/functionWidget/AddRecordComponent.js"></script>
+
+<script src="src/wof/functionWidget/spanner/AddRecordComponentSpanner.js"></script>
+
+<script src="src/wof/kernel/initAOP.js"></script>
+
+<script src="lib/wis/src/wis/kernel/initNamespace.js"></script>
+
+<script src="lib/wis/src/wis/util/Hashtable.js"></script>
+<script src="lib/wis/src/wis/util/ObjectManager.js"></script>
+<script src="lib/wis/src/wis/util/Observer.js"></script>
+<script src="lib/wis/src/wis/util/ArrayList.js"></script>
+<script src="lib/wis/src/wis/util/Selector.js"></script>
+<script src="lib/wis/src/wis/util/SelectorList.js"></script>
+<script src="lib/wis/src/wis/util/GlobalObject.js"></script>
+<script src="lib/wis/src/wis/util/Tool.js"></script>
+
+<script src="lib/wis/src/wis/widget/Tab.js"></script>
+<script src="lib/wis/src/wis/widget/Tree.js"></script>
+
+<script src="lib/wis/src/wis/kernel/initSystem.js"></script>
+
+
+<script>
+jQuery(function(){
+	var container = jQuery('#container');
+    var metadataDiv = jQuery('#metadataDiv');
+    var flowLayout = null;
+    var flowLayoutHelper = null;
+
+    container.hide();
+    metadataDiv.hide();
+	//设置布局
+	function layout(){
+		var windowWidth = jQuery(window).width();
+		var windowHeight = jQuery(window).height();
+		container.css('width', windowWidth+'px');
+		container.css('height', windowHeight+'px');
+        metadataDiv.css('width', (windowWidth-100)+'px');
+        metadataDiv.css('height', (windowHeight-100)+'px');
+        metadataDiv.css('padding', '20px');
+        metadataDiv.css('border', '1px solid black');
+        metadataDiv.css('overflow', 'auto');
+	}
+	//读取元数据
+	function getMetaData(){
+        var meta = null;
+        //读取元数据
+        jQuery.ajax({
+            url: '../data.json',
+            type: 'get',
+            cache: false,
+            async: false,
+            dataType:'json',
+            success:function(data){
+                meta = data;
+            },
+            error:function(e){
+                alert('读取元数据发生错误:'+e);
+            }
+        });
+        return meta;
+    }
+    //渲染表单
+    function renderForm(){
+        if(flowLayout!=null){
+            flowLayout.removeChildren(true);
+            flowLayout.remove(true);
+            flowLayout = null;
+        }
+        if(flowLayoutHelper!=null){
+            flowLayoutHelper.removeChildren(true);
+            flowLayoutHelper.remove(true);
+            flowLayoutHelper = null;
+        }
+        var meta = getMetaData();
+        flowLayout = eval('(new '+meta.className+'())');
+        flowLayout.setData(meta);
+        flowLayout.render();
+        flowLayout.appendTo(container);
+        //需要流式布局的助手对象 以便自适应屏幕
+        flowLayoutHelper = wof$.create('FlowLayoutHelper');
+        flowLayoutHelper.appendTo(container);
+    }
+	//重设工作区
+	function resizeForm(){
+		try{
+			var windowWidth = jQuery(window).width();
+			var windowHeight = jQuery(window).height();
+            flowLayout.setWidth(windowWidth-5);
+            flowLayout.setHeight(windowHeight-5);
+            flowLayout.sendMessage('wof.bizWidget.FlowLayout_resize');
+		}catch(e){}
+	}
+    //查看元数据
+    function metaData(){
+        metadataDiv.text(JSON.stringify(getMetaData()));
+    }
+	jQuery(window).load(function(){
+		layout();
+        renderForm();
+	});
+	jQuery(window).resize(function(){
+		layout();
+        resizeForm();
+	});
+    jQuery('#renderForm,#metaData,#html,#nativeCode,#6vCode').button().click(function(event){
+        event.preventDefault();
+        container.hide();
+        metadataDiv.hide();
+        layout();
+        var id = jQuery(event.target).attr('id');
+        if(id=='renderForm'){
+            renderForm();
+            container.show(900);
+        }else if(id=='metaData'){
+            metaData();
+            metadataDiv.show(900);
+        }
+
+    });
+});
+</script>
+</head>
+<body>
+<div>
+    <input type="button" id="renderForm" value="渲染表单" />
+    <input type="button" id="metaData" value="查看元数据" />
+    <input type="button" id="html" value="查看HTML" />
+    <input type="button" id="nativeCode" value="查看原生代码" />
+    <input type="button" id="6vCode" value="查看6v代码" />
+</div>
+<div id="container"></div>
+<div id="metadataDiv"></div>
+
+</body>
+</html>
