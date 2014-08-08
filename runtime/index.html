@@ -110,11 +110,14 @@
 jQuery(function(){
 	var container = jQuery('#container');
     var metadataDiv = jQuery('#metadataDiv');
+    var nativeCodeDiv = jQuery('#nativeCodeDiv');
+
     var flowLayout = null;
     var flowLayoutHelper = null;
 
     container.hide();
     metadataDiv.hide();
+    nativeCodeDiv.hide();
 	//设置布局
 	function layout(){
 		var windowWidth = jQuery(window).width();
@@ -126,24 +129,33 @@ jQuery(function(){
         metadataDiv.css('padding', '20px');
         metadataDiv.css('border', '1px solid black');
         metadataDiv.css('overflow', 'auto');
+        nativeCodeDiv.css('width', (windowWidth-100)+'px');
+        nativeCodeDiv.css('height', (windowHeight-100)+'px');
+        nativeCodeDiv.css('padding', '20px');
+        nativeCodeDiv.css('border', '1px solid black');
+        nativeCodeDiv.css('overflow', 'auto');
 	}
 	//读取元数据
 	function getMetaData(){
         var meta = null;
-        //读取元数据
-        jQuery.ajax({
-            url: '../data.json',
-            type: 'get',
-            cache: false,
-            async: false,
-            dataType:'json',
-            success:function(data){
-                meta = data;
-            },
-            error:function(e){
-                alert('读取元数据发生错误:'+e);
-            }
-        });
+        if(metadataDiv.val()!=null && metadataDiv.val().length>0){
+            meta = JSON.parse(metadataDiv.val());
+        }else{
+            //读取元数据
+            jQuery.ajax({
+                url: '../data.json',
+                type: 'get',
+                cache: false,
+                async: false,
+                dataType:'json',
+                success:function(data){
+                    meta = data;
+                },
+                error:function(e){
+                    alert('读取元数据发生错误:'+e);
+                }
+            });
+        }
         return meta;
     }
     //渲染表单
@@ -179,7 +191,63 @@ jQuery(function(){
 	}
     //查看元数据
     function metaData(){
-        metadataDiv.text(JSON.stringify(getMetaData()));
+        metadataDiv.val('');
+        metadataDiv.val(JSON.stringify(getMetaData()));
+    }
+
+    //{"cols":4,"itemHeight":70,"activeSectionIndex":1,"activeItemRank":{"row":1,"col":1},"id":"B23A86CE23C14B77B18C379F71557A15","isComponent":true,"className":"wof.bizWidget.FlowLayout","hiden":false,"position":"relative","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[{"id":"wof.bizWidget.FlowLayoutItem_newWidgetDrop","method":"this._newWidgetDrop(message);"},{"id":"wof.bizWidget.FlowLayoutSection_mousedown","method":"this._sectionMousedown(message);"},{"id":"wof.bizWidget.FlowLayoutSection_dblclick","method":"this._sectionDblclick(message);"},{"id":"wof.bizWidget.FlowLayoutItem_mousedown","method":"this._itemMousedown(message);"},{"id":"wof.bizWidget.FlowLayoutItem_dblclick","method":"this._itemDblclick(message);"},{"id":"wof.bizWidget.FlowLayoutSection_drop","method":"this._sectionDrop(message);"}],"width":872,"height":166,"top":0,"left":0,"css":"","childNodes":[{"isAutoExt":true,"mustInOrder":false,"title":"未命名分组","titleHeight":30,"cols":1,"rows":1,"itemHeight":136,"isExpand":true,"index":1,"id":"98FEA70E2D10473C8E102AFE76AA9FEC","isComponent":false,"className":"wof.bizWidget.FlowLayoutSection","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[{"id":"wof.bizWidget.FlowLayoutItem_itemDrop","method":"this._itemDrop(message);"}],"width":872,"height":166,"top":0,"left":0,"css":"","childNodes":[{"ico":"","value":"","text":"未命名分组","isUnderline":true,"isBold":false,"isHighlight":false,"type":"","tip":"","id":"AFA7B15F6F114D548BF65FDB05477899","isComponent":false,"className":"wof.widget.Label","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[],"width":872,"height":30,"top":0,"left":0,"css":"","childNodes":[]},{"rowspan":1,"isFixItem":false,"row":1,"col":1,"colspan":1,"id":"D01CE68AE642469E9494AAAD14C73097","isComponent":false,"className":"wof.bizWidget.FlowLayoutItem","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[],"width":872,"height":136,"top":30,"left":0,"css":"","childNodes":[]}]}]}
+    //原生代码
+    function nativeCode(){
+        var codeArr = [];
+        var meta = getMetaData();
+        var n = 0;
+        //首字母大写
+        function caption(s){
+            var a = s.split('');
+            a[0] = a[0].toUpperCase();
+            return a.join('');
+        }
+        //返回r个空格
+        function getSpace(r){
+            var s = '';
+            for(var i=0;i<r;i++){
+                s += ' ';
+            }
+            return s;
+        }
+        /**
+         * 根据对象元数据生成对应的set代码
+         * name 对象变量名称
+         * md 对象元数据
+         */
+        function genSetCode(name,md){
+            var setCode = [];
+            for(var k in md){
+                if(k!='id' && k!='className' && k!='childNodes'){
+                    setCode.push(getSpace(n)+name+'.set'+caption(k)+'('+JSON.stringify(md[k])+');');
+                }
+            }
+            return setCode;
+        }
+        function toNativeCode(md,pName){
+            var clzName = md.className;
+            clzName = clzName.substr(clzName.lastIndexOf('.')+1);
+            var name = clzName.toLowerCase()+'_'+n;
+            codeArr.push(getSpace(n)+'var '+name+' = wof$.create("'+clzName+'");');
+            codeArr = codeArr.concat(genSetCode(name,md));
+            if(n>0){
+                codeArr.push(getSpace(n)+name+'.appendTo('+pName+');');
+            }else{
+                codeArr.push(name+'.appendTo();');
+            }
+            n++;
+            for(var i=0; i<md.childNodes.length; i++){
+                var childNode = md.childNodes[i];
+                toNativeCode(childNode,name);
+            }
+        }
+        toNativeCode(meta);
+        nativeCodeDiv.val(codeArr.join('\n'));
     }
 	jQuery(window).load(function(){
 		layout();
@@ -189,18 +257,22 @@ jQuery(function(){
 		layout();
         resizeForm();
 	});
-    jQuery('#renderForm,#metaData,#html,#nativeCode,#6vCode').button().click(function(event){
+    jQuery('#renderForm,#metaData,#nativeCode,#6vCode').button().click(function(event){
         event.preventDefault();
         container.hide();
         metadataDiv.hide();
+        nativeCodeDiv.hide();
         layout();
         var id = jQuery(event.target).attr('id');
         if(id=='renderForm'){
             renderForm();
-            container.show(900);
+            container.show(800);
         }else if(id=='metaData'){
             metaData();
-            metadataDiv.show(900);
+            metadataDiv.show(800);
+        }else if(id=='nativeCode'){
+            nativeCode();
+            nativeCodeDiv.show(800);
         }
 
     });
@@ -211,12 +283,12 @@ jQuery(function(){
 <div>
     <input type="button" id="renderForm" value="渲染表单" />
     <input type="button" id="metaData" value="查看元数据" />
-    <input type="button" id="html" value="查看HTML" />
     <input type="button" id="nativeCode" value="查看原生代码" />
     <input type="button" id="6vCode" value="查看6v代码" />
 </div>
 <div id="container"></div>
-<div id="metadataDiv"></div>
+<textarea id="metadataDiv"></textarea>
+<textarea id="nativeCodeDiv"></textarea>
 
 </body>
 </html>

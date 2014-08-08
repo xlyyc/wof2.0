@@ -28,7 +28,7 @@ wof.widget.Button.prototype = {
      */
 
     getName: function () {
-        return this._name;
+        return this._name || '';
     },
 
     setName: function (name) {
