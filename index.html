@@ -84,8 +84,10 @@
 <script src="src/wof/bizWidget/ObjectInspector.js"></script>
 
 <script src="src/wof/functionWidget/AddRecordComponent.js"></script>
+<script src="src/wof/functionWidget/SelectAll.js"></script>
 
 <script src="src/wof/functionWidget/spanner/AddRecordComponentSpanner.js"></script>
+<script src="src/wof/functionWidget/spanner/SelectAllSpanner.js"></script>
 
 <script src="src/wof/kernel/initAOP.js"></script>
 
@@ -195,6 +197,11 @@ jQuery(function(){
         addRecordComponentSpanner.appendTo(gridLayout1);
         widgetComponents.push(addRecordComponentSpanner);
         wof_components.push(addRecordComponentSpanner);
+
+        var selectAllSpanner = wof$.create('SelectAllSpanner');
+        selectAllSpanner.appendTo(gridLayout1);
+        widgetComponents.push(selectAllSpanner);
+        wof_components.push(selectAllSpanner);
 
         var buttonSpanner = wof$.create('ButtonSpanner');
         buttonSpanner.appendTo(gridLayout1);
@@ -522,8 +529,6 @@ jQuery(function(){
             });
             jQuery('#compositeComponent_dialog_form').dialog('open');
         }else if(id=='saveToComponent'){
-            var s = wof$.find('[label=未命名]');
-            alert(s.size());
             for(var i=0;i<s.size();i++){
                 alert(s.get(i).getLabel());
             }

@@ -84,8 +84,10 @@
 <script src="src/wof/bizWidget/ObjectInspector.js"></script>
 
 <script src="src/wof/functionWidget/AddRecordComponent.js"></script>
+<script src="src/wof/functionWidget/SelectAll.js"></script>
 
 <script src="src/wof/functionWidget/spanner/AddRecordComponentSpanner.js"></script>
+<script src="src/wof/functionWidget/spanner/SelectAllSpanner.js"></script>
 
 <script src="src/wof/kernel/initAOP.js"></script>
 
@@ -195,7 +197,6 @@ jQuery(function(){
         metadataDiv.val(JSON.stringify(getMetaData()));
     }
 
-    //{"cols":4,"itemHeight":70,"activeSectionIndex":1,"activeItemRank":{"row":1,"col":1},"id":"B23A86CE23C14B77B18C379F71557A15","isComponent":true,"className":"wof.bizWidget.FlowLayout","hiden":false,"position":"relative","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[{"id":"wof.bizWidget.FlowLayoutItem_newWidgetDrop","method":"this._newWidgetDrop(message);"},{"id":"wof.bizWidget.FlowLayoutSection_mousedown","method":"this._sectionMousedown(message);"},{"id":"wof.bizWidget.FlowLayoutSection_dblclick","method":"this._sectionDblclick(message);"},{"id":"wof.bizWidget.FlowLayoutItem_mousedown","method":"this._itemMousedown(message);"},{"id":"wof.bizWidget.FlowLayoutItem_dblclick","method":"this._itemDblclick(message);"},{"id":"wof.bizWidget.FlowLayoutSection_drop","method":"this._sectionDrop(message);"}],"width":872,"height":166,"top":0,"left":0,"css":"","childNodes":[{"isAutoExt":true,"mustInOrder":false,"title":"未命名分组","titleHeight":30,"cols":1,"rows":1,"itemHeight":136,"isExpand":true,"index":1,"id":"98FEA70E2D10473C8E102AFE76AA9FEC","isComponent":false,"className":"wof.bizWidget.FlowLayoutSection","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[{"id":"wof.bizWidget.FlowLayoutItem_itemDrop","method":"this._itemDrop(message);"}],"width":872,"height":166,"top":0,"left":0,"css":"","childNodes":[{"ico":"","value":"","text":"未命名分组","isUnderline":true,"isBold":false,"isHighlight":false,"type":"","tip":"","id":"AFA7B15F6F114D548BF65FDB05477899","isComponent":false,"className":"wof.widget.Label","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[],"width":872,"height":30,"top":0,"left":0,"css":"","childNodes":[]},{"rowspan":1,"isFixItem":false,"row":1,"col":1,"colspan":1,"id":"D01CE68AE642469E9494AAAD14C73097","isComponent":false,"className":"wof.bizWidget.FlowLayoutItem","hiden":false,"position":"absolute","zIndex":"auto","scale":1,"onSendMessage":[],"onReceiveMessage":[],"width":872,"height":136,"top":30,"left":0,"css":"","childNodes":[]}]}]}
     //原生代码
     function nativeCode(){
         var codeArr = [];
