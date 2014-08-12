@@ -73,9 +73,8 @@ wof.widget.Button.prototype = {
     //渲染初始化 仅在第一次调用render时执行
     _initRender: function () {
         var _this = this;
-        this._btn = jQuery('<button type="'+this.getType()+'">');
+        this._btn = jQuery('<button type="'+this.getType()+'">').button();
         this.getDomInstance().append(this._btn);
-
     },
 
     //渲染前处理方法
@@ -92,18 +91,20 @@ wof.widget.Button.prototype = {
             this._btn.css('height', this.getHeight() + 'px');
         }
         this._btn.attr('name', this.getName());
-        this._btn.text(this.getLabel());
-        if (this.getDisabled()) {
-            this._btn.attr('disabled');
-        } else {
-            this._btn.attr('');
+        this._btn.button({'label':this.getLabel()});
+        if(this.getDisabled()==true){
+            this._btn.button('disable');
+        }else{
+            this._btn.button('enable');
         }
+
 
     },
 
     //渲染后处理方法
     _afterRender: function () {
 
+        this._btn.button('refresh');
         this.sendMessage('wof.widget.Button_render');
     },
 
