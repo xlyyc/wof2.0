@@ -23,6 +23,9 @@ if (!wof.util.Selector) {
                 }else if(queryString.indexOf('#')==0){ //id选择器
                     var queryStr = queryString.substring(1);
                     selectors.push({type:'#',query:queryStr});
+                }else if(queryString.indexOf('[')==0){ //属性选择器
+                    var queryStr = queryString.substring(1,queryString.lastIndexOf(']'));
+                    selectors.push({type:'attr',query:queryStr});
                 }else{
                     selectors.push({type:'className',query:queryString});
                 }
@@ -45,7 +48,8 @@ if (!wof.util.Selector) {
                     sls = wof.util.Selector._getObjectById(ss.query);
                 }else if(ss.type=='className'){
                     sls = wof.util.Selector._getObjectByClassName(ss.query);
-                    console.log('查找className='+ss.query+'的对象');
+                }else if(ss.type=='attr'){
+                    sls = wof.util.Selector._getObjectByAttr(ss.query);
                 }
             }
             return sls;
@@ -87,14 +91,42 @@ if (!wof.util.Selector) {
         _getObjectByClassName: function(clzName) {
             var sls = new wof.util.SelectorList();
             var tempSls = wof.util.Selector._getAllObjects();
-            for(var i=0;i<tempSls.size;i++){
+            for(var i=0;i<tempSls.size();i++){
                 var obj = tempSls.get(i);
                 if(obj.getClassName()==clzName){
-                    sls.push(obj);
+                    sls.add(obj);
+                }
+            }
+            return sls;
+        },
+
+        /**
+         * 根据属性查找对象
+         * return 对象集合
+         */
+        _getObjectByAttr: function(queryStr) {
+            function caption(s){
+                var a = s.split('');
+                a[0] = a[0].toUpperCase();
+                return a.join('');
+            }
+            var name = queryStr.substring(0,queryStr.indexOf('='));
+            var value = queryStr.substring(queryStr.indexOf('=')+1);
+            if(value.indexOf('"')==0&&value.lastIndexOf('"')==(value.length-1)){
+                value = value.substring(1,value.length-1);
+            }
+            var getM = 'get'+caption(name);
+            var sls = new wof.util.SelectorList();
+            var tempSls = wof.util.Selector._getAllObjects();
+            for(var i=0;i<tempSls.size();i++){
+                var obj = tempSls.get(i);
+                if(obj[getM]!=null && eval('obj.'+getM+'()')==value) {
+                    sls.add(obj);
                 }
             }
             return sls;
         }
+
 
 
     };

@@ -522,6 +522,11 @@ jQuery(function(){
             });
             jQuery('#compositeComponent_dialog_form').dialog('open');
         }else if(id=='saveToComponent'){
+            var s = wof$.find('[label=未命名]');
+            alert(s.size());
+            for(var i=0;i<s.size();i++){
+                alert(s.get(i).getLabel());
+            }
             jQuery('#component_dialog_form').dialog({
                 autoOpen: false,
                 height:200,
