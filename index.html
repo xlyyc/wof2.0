@@ -432,6 +432,7 @@ jQuery(function(){
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
         flowLayoutHelper.appendTo(content);
 
+        wof$.find(':first[label !=\'未命名\'][xx="tt"]');
     }
 	//重设工作区
 	function resizeContent(){
@@ -561,8 +562,6 @@ jQuery(function(){
             jQuery('#component_dialog_form').dialog('open');
         }
 	});
-
-    wof$.find(':first[label !=\'未命名\'][xx="tt"]');
 });
 
 window.getContentLayout = function(){
