@@ -104,17 +104,16 @@ if (!wof.util.Selector) {
                 if(qs['type']=='id'){
                     sls = wof.util.Selector._getObjectById(ss.query);
                 }else{
-                    if(qs['pseudo']){
-                        console.log('从左向右');
-                        if(qs['type']=='className'){
-                            if(qs['className']=='*'){
-                                sls = wof.util.Selector._getAllObjects();
-                                console.log('111111==========='+sls.size());
-                            }
-                            //todo 根据伪类过滤
+                    if(qs['type']=='className'){
+                        if(qs['className']=='*'){
+                            sls = wof.util.Selector._getAllObjects();
+                        }else{
+                            sls = wof.util.Selector._getObjectByClassName(qs['className']);
                         }
-                    }else{
-                        console.log('从右向左');
+                        //根据属性过滤
+                        wof.util.Selector._attrFilter(sls, qs['attrs']);
+                        //根据伪类过滤
+                        wof.util.Selector._pseudoFilter(sls, qs['pseudo']);
                     }
                 }
             }else if(parts.length>1){
@@ -122,6 +121,98 @@ if (!wof.util.Selector) {
 
             }
             return sls;
+        },
+
+        /**
+         * 根据属性过滤
+         * sls 待过滤集合
+         * attrs 属性设置
+         */
+        _attrFilter: function(sls, attrs){
+            function caption(s){
+                var a = s.split('');
+                a[0] = a[0].toUpperCase();
+                return a.join('');
+            }
+            for(var i=0;i<attrs.length;i++){
+                filter(attrs[i]);
+            }
+            function filter(attr){
+                var name = attr['attr'];
+                var op = attr['op'];
+                var value = attr['value'];
+                var len = sls.size();
+                var getM = 'get'+caption(name);
+                for(var i=len-1;i>=0;i--){
+                    var obj = sls.get(i);
+                    if(op){
+                        var v;
+                        if(obj[getM]!=null){
+                            v = eval('obj.'+getM+'()');
+                        }
+                        if(op=='='){ //所有属性attribute1的值等于value1的对象
+                            //如果属性不存在或者属性值不相等 则移除此对象
+                            if(v!=value) {
+                                sls.remove(i);
+                            }
+                        }else if(op=='!='){ //所有属性attribute1的值不等于value1的对象
+                            //如果属性不存在或者属性值相等 则移除此对象
+                            if(v==value) {
+                                sls.remove(i);
+                            }
+                        }else if(op=='^='){ //所有属性attribute1的值以value1开头的对象
+                            //如果属性不存在或者属性值为空或者属性值不以表达式值开头 则移除此对象
+                            if(v==null || v.indexOf(value)!=0) {
+                                sls.remove(i);
+                            }
+                        }else if(op=='$='){ //所有属性attribute1的值以value1结尾的对象
+                            //如果属性不存在或者属性值为空或者属性值不以表达式值结尾 则移除此对象
+                            if(v==null || eval('obj.'+getM+'()').lastIndexOf(value)!=(v.length-value.length)) {
+                                sls.remove(i);
+                            }
+                        }else if(op=='*='){ //所有属性attribute1的值包含value1的对象
+                            //todo
+                        }else if(op=='~='){ //所有属性attribute1的值包含value1（以空格分隔的单词）的对象
+                            //todo
+                        }
+                    }else{ //所有带有attribute1属性的对象
+                        //如果不存在attr属性 则将该对象移除
+                        if(!obj[getM]){
+                            sls.remove(i);
+                        }
+                    }
+                }
+
+            }
+        },
+
+        /**
+         * 根据伪类过滤
+         * sls待过滤集合
+         * pseudo
+         */
+        _pseudoFilter: function(sls, pseudo){
+            if(pseudo=='first'){ //第一个对象
+                if(sls.size()>0){
+                    var o = sls.get(0);
+                    sls.clear();
+                    sls.add(o);
+                }
+            }else if(pseudo=='last') { //最后一个对象
+                if(sls.size()>0){
+                    var o = sls.get(sls.size()-1);
+                    sls.clear();
+                    sls.add(o);
+                }
+            }else if(pseudo=='even') { //所有偶数对象
+
+            }else if(pseudo=='odd') { //所有奇数对象
+
+            }else if(pseudo=='hidden') { //所有隐藏的对象
+
+            }else if(pseudo=='visible') { //所有可见的对象
+
+            }
         },
 
         /**
@@ -144,7 +235,6 @@ if (!wof.util.Selector) {
         _getAllObjects: function() {
             var sls = new wof.util.SelectorList();
             var oIds = wof.util.ObjectManager.oIds();
-            alert(oIds.length);
             for(var i=0;i<oIds.length;i++){
                 var obj = wof.util.ObjectManager.get(oIds[i]);
                 if(obj!=null&&obj.getIsComponent()==true){
@@ -157,13 +247,14 @@ if (!wof.util.Selector) {
         /**
          * 根据类型查找对象
          * return 对象集合
+         * 目前是按照短类名查找 并且忽略大小写
          */
         _getObjectByClassName: function(clzName) {
             var sls = new wof.util.SelectorList();
             var tempSls = wof.util.Selector._getAllObjects();
             for(var i=0;i<tempSls.size();i++){
                 var obj = tempSls.get(i);
-                if(obj.getClassName()==clzName){
+                if((obj.getClassName().substring(obj.getClassName().lastIndexOf('.')+1)).toLowerCase()==clzName.toLowerCase()){
                     sls.add(obj);
                 }
             }

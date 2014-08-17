@@ -432,7 +432,8 @@ jQuery(function(){
         var flowLayoutHelper = wof$.create('FlowLayoutHelper');
         flowLayoutHelper.appendTo(content);
 
-        wof$.find(':first[label !=\'未命名\'][xx="tt"]');
+        var ss = wof$.find('Button');
+        alert(ss.size()+ss.get(0).toJSON());
     }
 	//重设工作区
 	function resizeContent(){
