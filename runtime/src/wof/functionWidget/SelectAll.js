@@ -8,6 +8,11 @@
 wof.functionWidget.SelectAll = function () {
     this._version = '1.0';
 
+    //注册监听
+    var onReceiveMessage = [];
+    onReceiveMessage.push({id:'wof.widget.CheckBox_click', method:'this._receiveCheckBoxClick(message);'});
+    this.setOnReceiveMessage(onReceiveMessage);
+
 };
 
 wof.functionWidget.SelectAll.prototype = {
@@ -19,6 +24,11 @@ wof.functionWidget.SelectAll.prototype = {
      */
     _queryString: null,
     _queryAllString:null,
+
+    _checkboxs:null, //多选框
+    _checkAllBoxs:null, //全选框
+
+    _checkedData: null, //勾选数据记录 id值为key true 勾选 false 未勾选
 
     /**
      * get/set 属性方法定义
@@ -94,14 +104,51 @@ wof.functionWidget.SelectAll.prototype = {
     config: function(){
         var queryAllString = this.getQueryAllString();
         var queryString = this.getQueryString();
-        //如果两个选择器字串都有配置 这执行查找对象 并注册监听
+        //如果两个选择器字串都有配置 执行查找对象 并注册监听
         if(queryAllString.length>0 && queryString.length>0){
-            var allCheck = wof$.find(queryAllString);
-            var check = wof$.find(queryString);
-            //todo
-            console.log('找到全选构件:'+allCheck.size());
-            console.log('找到选择构件:'+check.size());
+            this._checkAllBoxs = wof$.find(queryAllString);
+            this._checkboxs = wof$.find(queryString);
+
+
+            console.log('找到全选框:'+this._checkAllBoxs.size());
+            console.log('找到多选框:'+this._checkboxs.size());
         }
+    },
+
+    _receiveCheckBoxClick : function(message){
+        console.log('sneder=='+message.sender);
+
+
+    },
+
+    //全选或全不选 flag true 全选 false 全不选
+    checkAll: function(flag){
+        for(var k in checkedData){
+            this._checkedData[k] = flag;
+        }
+    },
+
+    //根据勾选记录渲染选择状态
+    renderCheckState: function(){
+        var checkedCount=0,count=0;
+        var checkboxs = $('[tag-checkbox="checkbox"]');
+        checkboxs.each(function(){
+            if(checkedData[$(this).attr('id')] == true){
+                $(this).attr('checked',true);
+                checkedCount++;
+            }else{
+                $(this).attr('checked',false);
+            }
+            count++;
+        });
+        //如果选中数等于checkbox总数 则勾选全选按钮 否则取消勾选
+        var checkAllBox = $('[tag-checkbox="checkAll"]');
+        if(checkedCount==count){
+            checkAllBox.attr('checked',true);
+        }else{
+            checkAllBox.attr('checked',false);
+        }
+
     },
 
     //创建初始化

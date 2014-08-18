@@ -79,11 +79,11 @@ wof.widget.CheckBox.prototype = {
         this._checkbox = jQuery('<input type="checkbox" id="'+this.getId()+'">');
         this._checkbox.click(function(event) {
             event.stopPropagation();
-            _this.sendMessage('wof.widget.Checkbox_click');
+            _this.sendMessage('wof.widget.CheckBox_click');
         });
         this._checkbox.focus(function(event) {
             event.stopPropagation();
-            _this.sendMessage('wof.widget.Checkbox_focus');
+            _this.sendMessage('wof.widget.CheckBox_focus');
         });
         this._checkbox.blur(function(event) {
             event.stopPropagation();
@@ -109,7 +109,7 @@ wof.widget.CheckBox.prototype = {
     //选择实现
     _afterRender: function () {
 
-        this.sendMessage('wof.widget.Checkbox_render');
+        this.sendMessage('wof.widget.CheckBox_render');
     },
 
     /**

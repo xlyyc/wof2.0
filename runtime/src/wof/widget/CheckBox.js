@@ -18,7 +18,7 @@ wof.widget.CheckBox.prototype = {
     _label: null, //复选框的文字
     _disabled: null, //禁用
     _checked: null, //选中
-       
+
     _checkbox:null,
     _checkboxLabel:null,
 
@@ -72,18 +72,18 @@ wof.widget.CheckBox.prototype = {
      * 初始化方法
      */
     _init: function (data) {
-    	this.setOptions(data);
+        this.setOptions(data);
     },
     _initRender: function () {
         var _this = this;
         this._checkbox = jQuery('<input type="checkbox" id="'+this.getId()+'">');
         this._checkbox.click(function(event) {
             event.stopPropagation();
-            _this.sendMessage('wof.widget.Checkbox_click');
+            _this.sendMessage('wof.widget.CheckBox_click');
         });
         this._checkbox.focus(function(event) {
             event.stopPropagation();
-            _this.sendMessage('wof.widget.Checkbox_focus');
+            _this.sendMessage('wof.widget.CheckBox_focus');
         });
         this._checkbox.blur(function(event) {
             event.stopPropagation();
@@ -109,7 +109,7 @@ wof.widget.CheckBox.prototype = {
     //选择实现
     _afterRender: function () {
 
-        this.sendMessage('wof.widget.Checkbox_render');
+        this.sendMessage('wof.widget.CheckBox_render');
     },
 
     /**
@@ -118,12 +118,12 @@ wof.widget.CheckBox.prototype = {
 
     //----------必须实现----------
     getData: function () {
-    	return {
-    		 name: this.getName(),
-             label: this.getLabel(),
-             value: this.getValue(),
-             disabled: this.getDisabled(),
-             checked: this.getChecked()
+        return {
+            name: this.getName(),
+            label: this.getLabel(),
+            value: this.getValue(),
+            disabled: this.getDisabled(),
+            checked: this.getChecked()
         }
     },
 

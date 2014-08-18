@@ -12,7 +12,7 @@ wof.widget.spanner.CheckBoxSpanner = function () {
     this._meta.name = 'wof.widget.CheckBox';
     this._meta.title = '复选框';
     this._meta.sendMessages = {
-        'wof.widget.CheckBox_mousedown':'单击',
+        'wof.widget.Checkbox_click':'单击',
         'wof.widget.CheckBox_dblclick':'双击',
         'wof.widget.CheckBox_focus':'焦点',
         'wof.widget.CheckBox_blur':'失去焦点'

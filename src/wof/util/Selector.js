@@ -102,7 +102,7 @@ if (!wof.util.Selector) {
                 console.log(JSON.stringify(qs));
                 //如果type是id 则直接按照id查找
                 if(qs['type']=='id'){
-                    sls = wof.util.Selector._getObjectById(ss.query);
+                    sls = wof.util.Selector._getObjectById(qs['id']);
                 }else{
                     if(qs['type']=='className'){
                         if(qs['className']=='*'){

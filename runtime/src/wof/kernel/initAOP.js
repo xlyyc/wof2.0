@@ -11,22 +11,22 @@ var wof$_aop = (function(){
                 if(obj[o]['getClassName']==null){
                     //todo disable
                     /*for(var p in obj[o]['prototype']){
-                        if(typeof(obj[o]['prototype'][p])!='function'&&p.indexOf('_')!=0){
-                            (function(proto,p){
-                                var cp = caption(p);
-                                if(proto['set'+cp]==null){
-                                    proto['set'+cp]=function(val){
-                                        this[p] = val;
-                                    };
-                                }
-                                if(proto['get'+cp]==null){
-                                    proto['get'+cp]=function(){
-                                        return this[p];
-                                    };
-                                }
-                            })(obj[o]['prototype'],p);
-                        }
-                    }*/
+                     if(typeof(obj[o]['prototype'][p])!='function'&&p.indexOf('_')!=0){
+                     (function(proto,p){
+                     var cp = caption(p);
+                     if(proto['set'+cp]==null){
+                     proto['set'+cp]=function(val){
+                     this[p] = val;
+                     };
+                     }
+                     if(proto['get'+cp]==null){
+                     proto['get'+cp]=function(){
+                     return this[p];
+                     };
+                     }
+                     })(obj[o]['prototype'],p);
+                     }
+                     }*/
                     obj[o].prototype._version = null;
                     obj[o].prototype.getVersion = function(){
                         return this._version || '1.0';
@@ -427,9 +427,9 @@ var wof$_aop = (function(){
                         obj[o].prototype.getData = function(){
                             var data=this._getData();
                             data.id=this.getId();
-                            
+
                             data.isComponent = this.getIsComponent();
-                            
+
                             data.className=this.getClassName();
                             data.hiden=this.getHiden();
                             data.position = this.getPosition();
@@ -473,27 +473,31 @@ var wof$_aop = (function(){
                             if(data.left!=null){
                                 this.setLeft(data.left);
                             }
-                            
+
                             this.setIsComponent(data.isComponent);
-                            
+
                             this.setCss(data.css);
                             this.setHiden(data.hiden);
                             this.setPosition(data.position);
                             this.setZIndex(data.zIndex);
                             this.setScale(data.scale);
-                            
-                            //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
-                            var onSendMessage = [];
-                            for(var i=0;i<data.onSendMessage.length;i++){
-                                onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
-                            }
-                            this.setOnSendMessage(onSendMessage);
-                            var onReceiveMessage = [];
-                            for(var i=0;i<data.onReceiveMessage.length;i++){
-                                onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
-                            }
-                            this.setOnReceiveMessage(onReceiveMessage);
-                            
+
+                            /*
+                             //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
+                             var onSendMessage = data.onSendMessage;
+                             for(var i=0;i<data.onSendMessage.length;i++){
+                             onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
+                             }
+                             this.setOnSendMessage(onSendMessage);
+                             var onReceiveMessage = data.onReceiveMessage;
+                             for(var i=0;i<data.onReceiveMessage.length;i++){
+                             onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
+                             }
+                             this.setOnReceiveMessage(onReceiveMessage);
+
+                             */
+
+
                             var dataChildLen=data.childNodes.length;
                             var tempNodes=new wof.util.Hashtable();
                             var objChildLen=this.childNodes().length;
@@ -608,10 +612,10 @@ var wof$_aop = (function(){
                                         break;
                                     }
                                 }
-                                
+
                                 //todo 逻辑修改为如果当前对象为非构件对象 则只有同属于一个构件对象的对象的定制业务脚本才能调用当前对象的set方法
                                 /**
-                                if(this.getIsInside()==true){ //如果当前对象为内部对象 则定制业务脚本不能调用内部对象的set方法
+                                 if(this.getIsInside()==true){ //如果当前对象为内部对象 则定制业务脚本不能调用内部对象的set方法
                                     var canCall = true;
                                     var c = this[funcName].caller;
                                     if(c==null){
@@ -626,12 +630,12 @@ var wof$_aop = (function(){
                                         return;
                                     }
                                 }
-                                */
+                                 */
 
                                 var propertyName = '_'+(funcName.substring(3, funcName.length)).toLowerCase();
                                 //if(this[propertyName+'Render']!=null){ //todo 为了效率考虑 只有该属性定义了对应的渲染方法 _xxxRender 才会检查该属性值是否发生了变化
-                                    //.log("111=="+JSON.stringify(this[propertyName])); //当前值
-                                    //console.log('222=='+JSON.stringify(arguments[0])); //设置值
+                                //.log("111=="+JSON.stringify(this[propertyName])); //当前值
+                                //console.log('222=='+JSON.stringify(arguments[0])); //设置值
                                 //}
                                 this['__'+funcName].apply(this,arguments);
                             }

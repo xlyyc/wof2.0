@@ -482,18 +482,22 @@ var wof$_aop = (function(){
                             this.setZIndex(data.zIndex);
                             this.setScale(data.scale);
                             
+                            /*
                             //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
-                            var onSendMessage = [];
+                            var onSendMessage = data.onSendMessage;
                             for(var i=0;i<data.onSendMessage.length;i++){
                                 onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
                             }
                             this.setOnSendMessage(onSendMessage);
-                            var onReceiveMessage = [];
+                            var onReceiveMessage = data.onReceiveMessage;
                             for(var i=0;i<data.onReceiveMessage.length;i++){
                                 onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
                             }
                             this.setOnReceiveMessage(onReceiveMessage);
-                            
+
+                            */
+
+
                             var dataChildLen=data.childNodes.length;
                             var tempNodes=new wof.util.Hashtable();
                             var objChildLen=this.childNodes().length;
