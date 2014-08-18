@@ -10,7 +10,7 @@
 		run: function() {
             if(wof.customWindow.PageParamWindow._initFlag==null){
                 var pageParamWindow = new wof.bizWidget.PageParamWindow();
-                pageParamWindow.setIsComponent(false);
+                pageParamWindow.setComponentName(false);
                 //pageParamWindow.setContextParams(wof.customWindow.PageParamWindow.getContextParams());
                 if(jQuery.isEmptyObject(pageInputParam)){
                     pageInputParam = wof.customWindow.PageParamWindow.getContextParams();

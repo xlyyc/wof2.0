@@ -582,7 +582,7 @@ jQuery(function(){
                                     'data':JSON.stringify(templateData)
                                 },
                                 success:function(data){
-                                    alert(data);
+                                    alert(jQuery.trim(data));
                                 },
                                 error:function(e){
                                     alert('保存业务构件元数据发生错误:'+e);

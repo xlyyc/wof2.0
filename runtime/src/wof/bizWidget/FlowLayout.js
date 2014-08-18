@@ -9,7 +9,7 @@ wof.bizWidget.FlowLayout = function () {
 
     this.setPosition('relative');
 
-    this.setIsComponent(true);
+    this.setComponentName(true);
 
     var onReceiveMessage = [];
     onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this._newWidgetDrop(message);'});

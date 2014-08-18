@@ -57,7 +57,7 @@ wof.bizWidget.GridLayout.prototype = {
                 event.stopPropagation();
                 var obj = wof.util.ObjectManager.get(ui.draggable.attr('oid'));
                 if(obj!=null){
-                    if(obj.getIsComponent()!=true){
+                    if(obj.getComponentName()!=true){
                         var obj = wof.util.ObjectManager.get(ui.draggable.attr('oid'));
                         var node = eval('(new '+obj.getValue()+'()).createSelf('+_this.getWidth()+','+_this.getHeight()+');');
                         node.appendTo(_this);

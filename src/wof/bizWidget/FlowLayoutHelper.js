@@ -7,7 +7,7 @@
 wof.bizWidget.FlowLayoutHelper = function () {
     this._version = '1.0';
 
-    this.setIsComponent(true);
+    this.setComponentName(true);
 
     var onReceiveMessage = [];
     onReceiveMessage.push({id:'wof_object_resize',priority:99,method:'this._calcLayoutAndRender(message);'});
