@@ -13,6 +13,7 @@ wof.functionWidget.SelectAll = function () {
     onReceiveMessage.push({id:'wof.widget.CheckBox_click', method:'this._receiveCheckBoxClick(message);'});
     this.setOnReceiveMessage(onReceiveMessage);
 
+    this._checkedData = {};
 };
 
 wof.functionWidget.SelectAll.prototype = {
@@ -109,46 +110,91 @@ wof.functionWidget.SelectAll.prototype = {
             this._checkAllBoxs = wof$.find(queryAllString);
             this._checkboxs = wof$.find(queryString);
 
+            this._initCheckedData();
 
             console.log('找到全选框:'+this._checkAllBoxs.size());
             console.log('找到多选框:'+this._checkboxs.size());
         }
     },
 
+    //判断为全选框还是多选框
+    _getCheckBoxType: function(id){
+        var type = '';
+        for(var i=0;i<this._checkAllBoxs.size();i++){
+            var box = this._checkAllBoxs.get(i);
+            if(box.getId()==id){
+                type = 'checkAll';
+                break;
+            }
+        }
+        if(type.length==0){
+            for(var i=0;i<this._checkboxs.size();i++){
+                var box = this._checkboxs.get(i);
+                if(box.getId()==id){
+                    type = 'check';
+                    break;
+                }
+            }
+        }
+        return type;
+    },
+
     _receiveCheckBoxClick : function(message){
-        console.log('sneder=='+message.sender);
+        var obj = wof$.find('#'+message.sender.id).get(0);
+        var checkBoxType = this._getCheckBoxType(obj.getId());
+        //如果是全选框发出的消息 则全选或全不选多选框
+        if(checkBoxType=='checkAll'){
+            this.checkAll(obj.getChecked());
+        }else if(checkBoxType=='check'){
+            this.check(obj.getId(),obj.getChecked());
+        }
+        this.renderCheckState();
+    },
 
-
+    //初始化勾选数据记录
+    _initCheckedData: function(){
+        for(var i=0;i<this._checkboxs.size();i++){
+            var box = this._checkboxs.get(i);
+            this._checkedData[box.getId()] = false;
+            console.log(this._checkedData[box.getId()]);
+        }
     },
 
     //全选或全不选 flag true 全选 false 全不选
     checkAll: function(flag){
-        for(var k in checkedData){
+        for(var k in this._checkedData){
             this._checkedData[k] = flag;
         }
+    },
+
+    //选中或者取消选中指定的多选框
+    check: function(id, flag){
+        this._checkedData[id] = flag;
     },
 
     //根据勾选记录渲染选择状态
     renderCheckState: function(){
         var checkedCount=0,count=0;
-        var checkboxs = $('[tag-checkbox="checkbox"]');
-        checkboxs.each(function(){
-            if(checkedData[$(this).attr('id')] == true){
-                $(this).attr('checked',true);
+        for(var i=0;i<this._checkboxs.size();i++){
+            var box = this._checkboxs.get(i);
+            var checked = this._checkedData[box.getId()];
+            box.setChecked(checked);
+            if(checked){
                 checkedCount++;
-            }else{
-                $(this).attr('checked',false);
             }
+            box.render();
             count++;
-        });
-        //如果选中数等于checkbox总数 则勾选全选按钮 否则取消勾选
-        var checkAllBox = $('[tag-checkbox="checkAll"]');
-        if(checkedCount==count){
-            checkAllBox.attr('checked',true);
-        }else{
-            checkAllBox.attr('checked',false);
         }
-
+        //如果选中数等于checkbox总数 则勾选全选按钮 否则取消勾选
+        var allChecked = false;
+        if(checkedCount==count){
+            allChecked = true;
+        }
+        for(var i=0;i<this._checkAllBoxs.size();i++){
+            var box = this._checkAllBoxs.get(i);
+            box.setChecked(allChecked);
+            box.render();
+        }
     },
 
     //创建初始化

@@ -79,6 +79,12 @@ wof.widget.CheckBox.prototype = {
         this._checkbox = jQuery('<input type="checkbox" id="'+this.getId()+'">');
         this._checkbox.click(function(event) {
             event.stopPropagation();
+            var checked = $(this).attr('checked');
+            if(checked=='checked'){
+                _this.setChecked(true);
+            }else{
+                _this.setChecked(false);
+            }
             _this.sendMessage('wof.widget.CheckBox_click');
         });
         this._checkbox.focus(function(event) {

@@ -219,10 +219,10 @@ if (!wof.util.Selector) {
          * 根据对象id查找
          * return 对象集合
          */
-        _getObjectById: function(oid) {
+        _getObjectById: function(id) {
             var sls = new wof.util.SelectorList();
-            var obj = wof.util.ObjectManager.get(oid);
-            if(obj!=null&&obj.getIsComponent()==true){
+            var obj = wof.util.ObjectManager.get(id);
+            if(obj!=null && obj.getIsComponent()==true){
                 sls.add(obj);
             }
             return sls;
