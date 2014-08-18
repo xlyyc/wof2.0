@@ -238,6 +238,28 @@ jQuery(function(){
             }
         }
 
+        //获得业务构件数据
+        try{
+            jQuery.ajax({
+                url: 'component/component.js',
+                type: 'get',
+                async: false,
+                dataType:'text',
+                success:function(data){
+                    var ds = data.split("@wof@");
+                    for(var i=0;i<((ds.length-1)/2);i++){
+                        var cc = {id:ds[i*2],label:ds[i*2+1]};
+                        bizWidgetComponents.push(cc);
+                    }
+                },
+                error:function(e){
+                    alert('获取业务构件数据发生错误:'+e);
+                }
+            });
+        }catch(e){
+            alert(e);
+        }
+
         //获得构件组合数据
         var compositeComponentsData = [];
         try{
@@ -471,7 +493,7 @@ jQuery(function(){
                     'data':layout.toJSON()
                 },
                 success:function(data){
-                    alert(data);
+                    alert(jQuery.trim(data));
                 },
                 error:function(e){
                     alert('保存发生错误:'+e);
@@ -509,7 +531,7 @@ jQuery(function(){
                                     'data':JSON.stringify(templateData)
                                 },
                                 success:function(data){
-                                    alert(data);
+                                    alert(jQuery.trim(data));
                                 },
                                 error:function(e){
                                     alert('保存构件组合元数据发生错误:'+e);
@@ -530,13 +552,14 @@ jQuery(function(){
         }else if(id=='saveToComponent'){
             jQuery('#component_dialog_form').dialog({
                 autoOpen: false,
-                height:200,
-                width: 300,
+                height:300,
+                width: 350,
                 modal: true,
                 buttons:{
                     '保存':function(){
                         var name = jQuery('#component_dialog_name').val();
-                        if(name!=null&&name.length>0){
+                        var clzName = jQuery('#component_class_name').val();
+                        if(name!=null&&name.length>0&&clzName!=null&&clzName.length>0){
                             var templateData = null;
                             var cutObj = wof$.find('#'+(wof.util.GlobalObject.get('cutObjectId'))).get(0);
                             if(cutObj!=null){
@@ -548,7 +571,26 @@ jQuery(function(){
                             }else{
                                 templateData = getContentLayout().getData();
                             }
-                            console.log(JSON.stringify(templateData));
+
+                            jQuery.ajax({
+                                url: 'saveComponent.jsp',
+                                type: 'post',
+                                dataType:'text',
+                                data: {
+                                    'id':wof.util.Tool.uuid(),
+                                    'name':name,
+                                    'data':JSON.stringify(templateData)
+                                },
+                                success:function(data){
+                                    alert(data);
+                                },
+                                error:function(e){
+                                    alert('保存构件组合元数据发生错误:'+e);
+                                },
+                                complete:function(){
+                                    console.log('构件组合名称:'+name+'  构件组合元数据:'+JSON.stringify(templateData));
+                                }
+                            });
                         }
                         jQuery(this).dialog('close');
                     },
@@ -596,6 +638,11 @@ var pageInputParam = {};
 <div id="component_dialog_form" title="保存为业务构件">
     <p class="validateTips">名称</p>
     <p><input type="text" id="component_dialog_name" class="text" /></p>
+    <p class="validateTips">类名</p>
+    <p><input type="text" id="component_class_name" class="text" /></p>
+    <p class="validateTips">属性定义 demo从略</p>
+    <p class="validateTips">方法定义 demo从略</p>
+
 </div>
 
 </body>
