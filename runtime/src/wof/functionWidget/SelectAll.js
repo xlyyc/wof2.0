@@ -8,11 +8,6 @@
 wof.functionWidget.SelectAll = function () {
     this._version = '1.0';
 
-    //注册监听
-    var onReceiveMessage = [];
-    onReceiveMessage.push({id:'wof.widget.CheckBox_click', method:'this._receiveCheckBoxClick(message);'});
-    this.setOnReceiveMessage(onReceiveMessage);
-
     this._checkedData = {};
 };
 
@@ -99,13 +94,14 @@ wof.functionWidget.SelectAll.prototype = {
         this.setQueryString(data.queryString);
         this.setQueryAllString(data.queryAllString);
         this.config();
+
     },
 
     //生效配置
     config: function(){
         var queryAllString = this.getQueryAllString();
         var queryString = this.getQueryString();
-        //如果两个选择器字串都有配置 执行查找对象 并注册监听
+        //如果两个选择器字串都有配置 执行查找对象
         if(queryAllString.length>0 && queryString.length>0){
             this._checkAllBoxs = wof$.find(queryAllString);
             this._checkboxs = wof$.find(queryString);
@@ -115,6 +111,10 @@ wof.functionWidget.SelectAll.prototype = {
             console.log('找到全选框:'+this._checkAllBoxs.size());
             console.log('找到多选框:'+this._checkboxs.size());
         }
+        //注册监听
+        var onReceiveMessage = [];
+        onReceiveMessage.push({id:'wof.widget.CheckBox_click', method:'this._receiveCheckBoxClick(message);'});
+        this.setOnReceiveMessage(onReceiveMessage);
     },
 
     //判断为全选框还是多选框

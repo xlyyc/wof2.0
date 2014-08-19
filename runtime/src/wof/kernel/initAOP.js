@@ -112,7 +112,7 @@ var wof$_aop = (function(){
                     obj[o].prototype._domInstance = null;
                     obj[o].prototype.getDomInstance = function(){
                         if(this._domInstance==null){
-                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" componentname="'+this.getComponentName()+'">');
+                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" componentName="'+this.getComponentName()+'">');
                         }
                         return this._domInstance;
                     };
@@ -172,6 +172,7 @@ var wof$_aop = (function(){
                                     }
                                 }
                             }
+                            //todo 修改逻辑为能响应其他的构件以及来自自身内部对象的消息（判断来自自身对象的依据为检查其构件名称属性是否为同一个父对象）
                             if(this.getComponentName() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
                                 if(message.sender.componentName==true){
                                     processMsg(message);
@@ -482,21 +483,10 @@ var wof$_aop = (function(){
                             this.setZIndex(data.zIndex);
                             this.setScale(data.scale);
 
-                            /*
-                             //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
-                             var onSendMessage = data.onSendMessage;
-                             for(var i=0;i<data.onSendMessage.length;i++){
-                             onSendMessage.push({id:data.onSendMessage[i]['id'],method:data.onSendMessage[i]['method']});
-                             }
-                             this.setOnSendMessage(onSendMessage);
-                             var onReceiveMessage = data.onReceiveMessage;
-                             for(var i=0;i<data.onReceiveMessage.length;i++){
-                             onReceiveMessage.push({id:data.onReceiveMessage[i]['id'],method:data.onReceiveMessage[i]['method'],priority:data.onReceiveMessage[i]['priority']});
-                             }
-                             this.setOnReceiveMessage(onReceiveMessage);
 
-                             */
-
+                            //设置监听和发送消息 todo 设置和移除监听应该在添加或者移除对象时去执行
+                            this.setOnSendMessage(data.onSendMessage);
+                            this.setOnReceiveMessage(data.onReceiveMessage);
 
                             var dataChildLen=data.childNodes.length;
                             var tempNodes=new wof.util.Hashtable();
