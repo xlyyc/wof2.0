@@ -534,9 +534,6 @@ wof.bizWidget.VoucherComponent.prototype = {
      */
     updateVoucherComponent: function(voucherComponentData){
         if(!jQuery.isEmptyObject(voucherComponentData)){
-            if(voucherComponentData.componentName!=null){
-                this.setComponentName(voucherComponentData.componentName);
-            }
             if(voucherComponentData.itemHeight!=null){
                 this.setItemHeight(Number(voucherComponentData.itemHeight));
             }

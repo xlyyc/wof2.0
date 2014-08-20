@@ -18,7 +18,7 @@ wof.widget.CheckBox.prototype = {
     _label: null, //复选框的文字
     _disabled: null, //禁用
     _checked: null, //选中
-
+       
     _checkbox:null,
     _checkboxLabel:null,
 
@@ -72,7 +72,7 @@ wof.widget.CheckBox.prototype = {
      * 初始化方法
      */
     _init: function (data) {
-        this.setOptions(data);
+    	this.setOptions(data);
     },
     _initRender: function () {
         var _this = this;
@@ -124,12 +124,12 @@ wof.widget.CheckBox.prototype = {
 
     //----------必须实现----------
     getData: function () {
-        return {
-            name: this.getName(),
-            label: this.getLabel(),
-            value: this.getValue(),
-            disabled: this.getDisabled(),
-            checked: this.getChecked()
+    	return {
+    		 name: this.getName(),
+             label: this.getLabel(),
+             value: this.getValue(),
+             disabled: this.getDisabled(),
+             checked: this.getChecked()
         }
     },
 

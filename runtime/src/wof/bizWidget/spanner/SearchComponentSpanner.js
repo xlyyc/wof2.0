@@ -14,7 +14,6 @@ wof.bizWidget.spanner.SearchComponentSpanner = function () {
     this._meta.sendMessages = {'wof.bizWidget.SearchComponent_mousedown':'单击','wof.bizWidget.SearchComponent_render':'重绘'};
     this._meta.propertys = {
         'SearchComponent':{
-            'componentName':{prop:'componentName','name':'构件名称','type':'text','readOnly':false,'isHide':false,required:false},
             'itemHeight':{prop:'itemHeight','name':'行高','type':'naturalNumber','readOnly':false,'isHide':false,required:true},
             'name':{prop:'name','name':'构件名称','type':'text','readOnly':false,'isHide':false,required:false},
             'caption':{prop:'caption','name':'标题','type':'text','readOnly':false,'isHide':false,required:false},
@@ -277,7 +276,6 @@ wof.bizWidget.spanner.SearchComponentSpanner.prototype = {
         if(searchComponent!=null){
             parameters.id = this.getPropertys().id;
             parameters.componentId = this.getPropertys().componentId;
-            parameters.componentName = this.getPropertys().componentName;
             parameters.className = this.getPropertys().className;
             parameters.onReceiveMessage = this.getPropertys().onReceiveMessage;
             parameters.onSendMessage = this.getPropertys().onSendMessage;
@@ -412,7 +410,6 @@ wof.bizWidget.spanner.SearchComponentSpanner.prototype = {
             var root = tool.stringToXml("<searchComponent></searchComponent>");
             var rootElement = root.documentElement;
             tool.setAttribute(rootElement,"width",node.getWidth());
-            tool.setAttribute(rootElement,"componentName",node.getComponentName());
             tool.setAttribute(rootElement,"colsNum",node.getColsNum());
             tool.setAttribute(rootElement,"state",node.getState());
             tool.setAttribute(rootElement,"linkComponentID",node.getLinkComponentID());

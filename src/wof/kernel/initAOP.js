@@ -66,7 +66,7 @@ var wof$_aop = (function(){
                     };
                     obj[o].prototype._componentName = null; //是否为构件对象 默认 true 是
                     obj[o].prototype.getComponentName = function(){
-                        return this._componentName==null?true:this._componentName;
+                        return this._componentName==null?this.getClassName():this._componentName;
                     };
                     obj[o].prototype.setComponentName = function(componentName){
                         this._componentName = componentName;
@@ -92,10 +92,10 @@ var wof$_aop = (function(){
 
                     obj[o].prototype.getComponent = function(){
                         var component = null;
-                        if(this.getComponentName()!=true){ //如果自身不是构件对象 则查找自己所属的构件对象
+                        if(this.getComponentName()!=this.getClassName()){ //如果自身不是构件对象 则查找自己所属的构件对象
                             var parentNode = this;
                             while((parentNode=parentNode.parentNode())!=null){
-                                if(parentNode.getComponentName()==true){
+                                if(parentNode.getComponentName()==this.getComponentName()){
                                     component = parentNode;
                                     break;
                                 }
@@ -112,7 +112,7 @@ var wof$_aop = (function(){
                     obj[o].prototype._domInstance = null;
                     obj[o].prototype.getDomInstance = function(){
                         if(this._domInstance==null){
-                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" componentName="'+this.getComponentName()+'">');
+                            this._domInstance = this._domInstance=jQuery('<div oid="'+this.getId()+'" classname="'+this.getClassName()+'" componentname="'+this.getComponentName()+'">');
                         }
                         return this._domInstance;
                     };
@@ -148,8 +148,9 @@ var wof$_aop = (function(){
                             function findComponentId(id){
                                 var componentId = null;
                                 var parentNode = wof.util.ObjectManager.get(id);
+                                var componentName = parentNode.getComponentName();
                                 while((parentNode=parentNode.parentNode())!=null){
-                                    if(parentNode.getComponentName()==true){
+                                    if(parentNode.getClassName()==componentName){
                                         componentId = parentNode.getId();
                                         break;
                                     }
@@ -173,8 +174,8 @@ var wof$_aop = (function(){
                                 }
                             }
                             //todo 修改逻辑为能响应其他的构件以及来自自身内部对象的消息（判断来自自身对象的依据为检查其构件名称属性是否为同一个父对象）
-                            if(this.getComponentName() == true){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
-                                if(message.sender.componentName==true){
+                            if(this.getComponentName() == this.getClassName()){ //构件对象能响应来自其他构件对象的消息以及来自同属于自身构件的对象的消息
+                                if(message.sender.componentName==message.sender.className){
                                     processMsg(message);
                                 }else{
                                     var senderComponentId = findComponentId(message.sender.id);
@@ -184,7 +185,7 @@ var wof$_aop = (function(){
                                     }
                                 }
                             }else{
-                                if(message.sender.componentName!=true){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
+                                if(message.sender.componentName!=message.sender.className){ //如果不是构件对象 则只能响应来自同属于相同构件对象的（内部对象）消息
                                     var senderComponentId = findComponentId(message.sender.id);
                                     var receiverComponentId = findComponentId(this.getId());
                                     if(senderComponentId!=null&&senderComponentId==receiverComponentId){ //发送和接收者同属于一个构件对象

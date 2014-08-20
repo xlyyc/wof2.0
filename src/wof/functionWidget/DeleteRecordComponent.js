@@ -192,9 +192,6 @@ wof.functionWidget.DeleteRecordComponent.prototype = {
 
     updateDeleteRecordComponent: function(data){
         if(!jQuery.isEmptyObject(data)){
-            if(data.componentName!=null){
-                this.setComponentName(data.componentName);
-            }
             if(data.bindComponents!=null){
                 this.setBindComponents(data.bindComponents);
             }

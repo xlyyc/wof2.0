@@ -10,7 +10,7 @@
 		run: function(hidden, customParam) {
             if(wof.customWindow.ComponentTreeSelector._initFlag==null){
                 var tree = new wof.bizWidget.ComponentsTree();
-                tree.setIsInside(true);
+                tree.setComponentName(this.getClassName());
                 tree.setTop(0);
                 tree.setLeft(0);
                 tree.setWidth(420);

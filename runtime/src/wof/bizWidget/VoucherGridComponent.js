@@ -444,9 +444,6 @@ wof.bizWidget.VoucherGridComponent.prototype = {
      */
     updateVoucherGridComponent: function(voucherGridComponentData){
         if(!jQuery.isEmptyObject(voucherGridComponentData)){
-            if(voucherGridComponentData.componentName!=null){
-                this.setComponentName(voucherGridComponentData.componentName);
-            }
             if(voucherGridComponentData.name!=null){
                 this.setName(voucherGridComponentData.name);
             }

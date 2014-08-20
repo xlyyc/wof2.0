@@ -9,8 +9,6 @@ wof.bizWidget.FlowLayout = function () {
 
     this.setPosition('relative');
 
-    this.setComponentName(true);
-
     var onReceiveMessage = [];
     onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutItem_newWidgetDrop', method:'this._newWidgetDrop(message);'});
     onReceiveMessage.push({id:'wof.bizWidget.FlowLayoutSection_mousedown', method:'this._sectionMousedown(message);'});
@@ -431,9 +429,6 @@ wof.bizWidget.FlowLayout.prototype = {
      */
     updateFlowLayout: function(flowLayoutData){
         if(!jQuery.isEmptyObject(flowLayoutData)){
-            if(flowLayoutData.componentName!=null){
-                this.setComponentName(flowLayoutData.componentName);
-            }
             if(flowLayoutData.cols!=null){
                 this.setCols(Number(flowLayoutData.cols));
             }

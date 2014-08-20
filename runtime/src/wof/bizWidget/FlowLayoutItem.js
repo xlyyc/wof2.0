@@ -7,7 +7,7 @@
 wof.bizWidget.FlowLayoutItem = function () {
     this._version = '1.0';
 
-    this.setComponentName(false);
+    this.setComponentName('wof.bizWidget.FlowLayout');
 
     this.getDomInstance().css('overflow','hidden');
 
@@ -109,7 +109,7 @@ wof.bizWidget.FlowLayoutItem.prototype = {
                             if(childNode.getClassName()!='wof.bizWidget.FlowLayout' && childNode.getClassName()!='wof.bizWidget.GridLayout'){
                                 var parentNode = draggableObj;
                                 while((parentNode=parentNode.parentNode())!=null){
-                                    if(parentNode.getComponentName()==true){
+                                    if(parentNode.getComponentName()==draggableObj.getComponentName()){
                                         break;
                                     }
                                 }
@@ -130,10 +130,10 @@ wof.bizWidget.FlowLayoutItem.prototype = {
                     if(obj.getClassName()=='wof.bizWidget.FlowLayoutItem'){
                         _this.sendMessage('wof.bizWidget.FlowLayoutItem_itemDrop', {'itemId':ui.draggable.attr('oid')});
                     }else{
-                        if(obj.getComponentName()==false){
+                        if(obj.getComponentName()!=obj.getClassName()){
                             var parentNode = obj;
                             while((parentNode=parentNode.parentNode())!=null){
-                                if(parentNode.getComponentName()==true){
+                                if(parentNode.getClassName()==obj.getComponentName()){
                                     break;
                                 }
                             }

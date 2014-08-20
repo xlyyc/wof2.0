@@ -110,9 +110,6 @@ wof.bizWidget.ToolBar.prototype = {
      */
     updateSearchComponent: function(searchComponentDataData){
         if(!jQuery.isEmptyObject(searchComponentDataData)){
-            if(searchComponentDataData.componentName!=null){
-                this.setComponentName(searchComponentDataData.componentName);
-            }
             if(searchComponentDataData.itemHeight!=null){
                 this.setItemHeight(Number(searchComponentDataData.itemHeight));
             }

@@ -222,7 +222,7 @@ if (!wof.util.Selector) {
         _getObjectById: function(id) {
             var sls = new wof.util.SelectorList();
             var obj = wof.util.ObjectManager.get(id);
-            if(obj!=null && obj.getComponentName()==true){
+            if(obj!=null && obj.getComponentName()==obj.getClassName()){
                 sls.add(obj);
             }
             return sls;
@@ -237,7 +237,7 @@ if (!wof.util.Selector) {
             var oIds = wof.util.ObjectManager.oIds();
             for(var i=0;i<oIds.length;i++){
                 var obj = wof.util.ObjectManager.get(oIds[i]);
-                if(obj!=null&&obj.getComponentName()==true){
+                if(obj!=null&&obj.getComponentName()==obj.getClassName()){
                     sls.add(obj);
                 }
             }

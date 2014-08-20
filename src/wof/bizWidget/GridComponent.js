@@ -411,9 +411,6 @@ wof.bizWidget.GridComponent.prototype = {
      */
     updateGridComponent: function(gridComponentData){
         if(!jQuery.isEmptyObject(gridComponentData)){
-            if(gridComponentData.componentName!=null){
-                this.setComponentName(gridComponentData.componentName);
-            }
             if(gridComponentData.name!=null){
                 this.setName(gridComponentData.name);
             }

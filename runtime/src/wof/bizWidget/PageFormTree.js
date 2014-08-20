@@ -36,8 +36,7 @@ wof.bizWidget.PageFormTree.prototype = {
 
     _initRender: function(){
         this._tree = wof$.create('Tree');
-        this._tree.setIsInside(true);
-
+        this._tree.setComponentName(this.getClassName());
         this._tree.setTop(0);
         this._tree.setChkStyle('radio');
         this._tree.setRadioType('all');
