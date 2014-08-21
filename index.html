@@ -78,6 +78,8 @@
 <script src="src/wof/bizWidget/ParamWindow.js"></script>
 <script src="src/wof/bizWidget/PageParamWindow.js"></script>
 
+<script src="componentList.js"></script>
+
 <script src="src/wof/bizWidget/spanner/GridLayoutSpanner.js"></script>
 <script src="src/wof/bizWidget/spanner/FlowLayoutSpanner.js"></script>
 <script src="src/wof/bizWidget/spanner/VoucherComponentSpanner.js"></script>
@@ -226,17 +228,7 @@ jQuery(function(){
         //wof_components.push(tabSpanner);
 
 
-        for(var i=0;i<wof_components.length;i++){
-            var name = wof_components[i].getMeta().name;
-            for(var t=0;t<wof_components.length;t++){
-                var n = wof_components[t].getMeta().name;
-                if(name!=n){
-                    var onReceiveMessage = wof_components[t].getOnReceiveMessage();
-                    onReceiveMessage.push({id: name+'_active',method:'this._receivePropertysAndRenderSelf(null);'});
-                    wof_components[t].setOnReceiveMessage(onReceiveMessage);
-                }
-            }
-        }
+
 
         //获得业务构件数据
         try{
@@ -247,9 +239,12 @@ jQuery(function(){
                 dataType:'text',
                 success:function(data){
                     var ds = data.split("@wof@");
-                    for(var i=0;i<((ds.length-1)/2);i++){
-                        var cc = {id:ds[i*2],label:ds[i*2+1]};
-                        bizWidgetComponents.push(cc);
+                    for(var i=0;i<ds.length-1;i++){
+                        var clzName = ds[i];
+                        var objSpanner = wof$.create(clzName+'Spanner');
+                        objSpanner.appendTo(gridLayout1);
+                        bizWidgetComponents.push(objSpanner);
+                        wof_components.push(objSpanner);
                     }
                 },
                 error:function(e){
@@ -282,6 +277,19 @@ jQuery(function(){
         }catch(e){
             alert(e);
         }
+
+        for(var i=0;i<wof_components.length;i++){
+            var name = wof_components[i].getMeta().name;
+            for(var t=0;t<wof_components.length;t++){
+                var n = wof_components[t].getMeta().name;
+                if(name!=n){
+                    var onReceiveMessage = wof_components[t].getOnReceiveMessage();
+                    onReceiveMessage.push({id: name+'_active',method:'this._receivePropertysAndRenderSelf(null);'});
+                    wof_components[t].setOnReceiveMessage(onReceiveMessage);
+                }
+            }
+        }
+
         var objectBar = wof$.create('ObjectBar');
         objectBar.setCompositeComponents(compositeComponentsData);
         objectBar.setLayoutComponents(layoutComponents);
