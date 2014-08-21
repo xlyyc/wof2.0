@@ -95,7 +95,7 @@ var wof$_aop = (function(){
                         if(this.getComponentName()!=this.getClassName()){ //如果自身不是构件对象 则查找自己所属的构件对象
                             var parentNode = this;
                             while((parentNode=parentNode.parentNode())!=null){
-                                if(parentNode.getComponentName()==this.getComponentName()){
+                                if(parentNode.getClassName()==this.getComponentName()){
                                     component = parentNode;
                                     break;
                                 }
