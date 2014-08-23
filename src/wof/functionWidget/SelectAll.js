@@ -106,6 +106,23 @@ wof.functionWidget.SelectAll.prototype = {
             this._checkAllBoxs = wof$.find(queryAllString);
             this._checkboxs = wof$.find(queryString);
 
+            if(this.getComponent()!=null){ //表明有所属的构件对象
+                //需要从中过滤掉不属于同一个构件对象的checkbox
+                var componentId = this.getComponent().getId();
+                for(var i=this._checkAllBoxs.size()-1;i>=0;i--){
+                    var cab = this._checkAllBoxs.get(i);
+                    if(cab.getComponent()!=null || cab.getComponent().getId()!=componentId){
+                        this._checkAllBoxs.remove(i);
+                    }
+                }
+                for(var i=this._checkboxs.size()-1;i>=0;i--){
+                    var cb = this._checkboxs.get(i);
+                    if(cb.getComponent()!=null || cb.getComponent().getId()!=componentId){
+                        this._checkboxs.remove(i);
+                    }
+                }
+            }
+
             this._initCheckedData();
 
             console.log('找到全选框:'+this._checkAllBoxs.size());

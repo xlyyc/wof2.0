@@ -89,7 +89,7 @@ var wof$_aop = (function(){
                     obj[o].prototype.getClassName = function(){
                         return this._className;
                     };
-
+                    //获得所属的构件对象 自身是构件对象则返回null
                     obj[o].prototype.getComponent = function(){
                         var component = null;
                         if(this.getComponentName()!=this.getClassName()){ //如果自身不是构件对象 则查找自己所属的构件对象
@@ -100,8 +100,6 @@ var wof$_aop = (function(){
                                     break;
                                 }
                             }
-                        }else{ //如果自身就是构件对象 则返回自己
-                            component = this;
                         }
                         return component;
                     };
