@@ -583,6 +583,7 @@ jQuery(function(){
                             jQuery.ajax({
                                 url: 'saveComponent.jsp',
                                 type: 'post',
+                                cache: false,
                                 dataType:'text',
                                 data: {
                                     'id':wof.util.Tool.uuid(),

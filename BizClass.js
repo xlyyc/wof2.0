@@ -1,15 +1,15 @@
 /**
- * @bizWidgetClass Test class
+ * @bizWidgetClass [BizClass] class
  * @package wof.bizWidget
  * @copyright author
  * @Time: 13-8-5 下午1:29
  */
-wof.bizWidget.Test = function () {
+wof.bizWidget.[BizClass] = function () {
     this._version = '1.0';
 
 
 };
-wof.bizWidget.Test.prototype = {
+wof.bizWidget.[BizClass].prototype = {
 
 
     /**
@@ -36,7 +36,7 @@ wof.bizWidget.Test.prototype = {
     //选择实现
     _afterRender: function () {
 
-        this.sendMessage('wof.bizWidget.Test_render');
+        this.sendMessage('wof.bizWidget.[BizClass]_render');
     },
 
     /**
@@ -54,9 +54,9 @@ wof.bizWidget.Test.prototype = {
 
     },
 
-    //创建新的Test
+    //创建新的[BizClass]
     createSelf: function(width, height){
-        var node = wof$.create('Test');
+        var node = wof$.create('[BizClass]');
         node.setWidth(50);
         node.setHeight(50);
         return node;
