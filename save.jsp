@@ -10,5 +10,5 @@
     os.write(data);
     os.flush();
     os.close();
-    out.println("保存成功");
+    out.print("保存成功");
 %>

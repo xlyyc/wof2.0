@@ -21,5 +21,5 @@
     os2.write("@wof@");
     os2.flush();
     os2.close();
-    out.println("保存复合构件成功");
+    out.print("保存复合构件成功");
 %>
