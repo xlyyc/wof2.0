@@ -10,7 +10,7 @@ wof.bizWidget.spanner.[BizClass]Spanner = function () {
     //初始化构件元数据 包括名称、标题、发送的消息
     this._meta = {};
     this._meta.name = 'wof.bizWidget.[BizClass]';
-    this._meta.title = '测试业务构件';
+    this._meta.title = '[name]';
     this._meta.sendMessages = {'wof.bizWidget.[BizClass]_mousedown':'单击','wof.bizWidget.[BizClass]_render':'重绘'};
     this._meta.propertys = {
         '[BizClass]':{

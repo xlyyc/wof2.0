@@ -40,6 +40,7 @@
     //生成扳手类
     //读取扳手类模板
     String clzSpannerStr = readFile(path+"/BizClassSpanner.js");
+    clzSpannerStr = clzSpannerStr.replaceAll("\\[name\\]", name);
     clzSpannerStr = clzSpannerStr.replaceAll("\\[BizClass\\]", clzName);
     writeFile(path+"/src/wof/bizWidget/spanner/"+clzName+"Spanner.js", clzSpannerStr, false);
 
