@@ -4,7 +4,7 @@
 <%!
     //读取文本文件
     public String readFile(String path) throws FileNotFoundException, IOException{
-        Reader reader = new InputStreamReader(new FileInputStream(path));
+        Reader reader = new InputStreamReader(new FileInputStream(path),"UTF-8");
         int tempchar;
         StringBuilder sb = new StringBuilder();
         while ((tempchar = reader.read()) != -1) {
