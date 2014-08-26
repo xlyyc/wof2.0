@@ -85,9 +85,11 @@
 <script src="src/wof/bizWidget/spanner/VoucherComponentSpanner.js"></script>
 <script src="src/wof/bizWidget/ObjectInspector.js"></script>
 
+<script src="src/wof/functionWidget/Submit.js"></script>
 <script src="src/wof/functionWidget/AddRecordComponent.js"></script>
 <script src="src/wof/functionWidget/SelectAll.js"></script>
 
+<script src="src/wof/functionWidget/spanner/SubmitSpanner.js"></script>
 <script src="src/wof/functionWidget/spanner/AddRecordComponentSpanner.js"></script>
 <script src="src/wof/functionWidget/spanner/SelectAllSpanner.js"></script>
 
@@ -204,6 +206,11 @@ jQuery(function(){
         selectAllSpanner.appendTo(gridLayout1);
         widgetComponents.push(selectAllSpanner);
         wof_components.push(selectAllSpanner);
+
+        var submitSpanner = wof$.create('SubmitSpanner');
+        submitSpanner.appendTo(gridLayout1);
+        widgetComponents.push(submitSpanner);
+        wof_components.push(submitSpanner);
 
         var buttonSpanner = wof$.create('ButtonSpanner');
         buttonSpanner.appendTo(gridLayout1);
