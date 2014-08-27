@@ -27,6 +27,10 @@ wof.functionWidget.spanner.SubmitSpanner = function () {
     onReceiveMessage.push({id:'wof.bizWidget.OnSendMessageBar_apply',method:method});
     onReceiveMessage.push({id:'wof.bizWidget.OnReceiveMessageBar_apply',method:method});
     this.setOnReceiveMessage(onReceiveMessage);
+
+    this._cutFlowLayoutIco = jQuery('<img style="position:absolute;width:16px;height:16px;z-index:90;" src="src/img/cut.gif">');
+
+
 };
 wof.functionWidget.spanner.SubmitSpanner.prototype = {
     /**
@@ -39,6 +43,8 @@ wof.functionWidget.spanner.SubmitSpanner.prototype = {
     _propertys: null,
 
     _parameters: null,
+
+    _cutFlowLayoutIco:null,
 
     /**
      * get/set 属性方法定义
@@ -72,6 +78,13 @@ wof.functionWidget.spanner.SubmitSpanner.prototype = {
 
     //选择实现
     _beforeRender: function () {
+        var _this = this;
+        this._cutFlowLayoutIco.remove();
+
+        this._cutFlowLayoutIco.mousedown(function(event){
+            event.stopPropagation();
+            wof.util.GlobalObject.add('cutObjectId',_this.getPropertys().id);
+        });
 
     },
 
@@ -84,6 +97,9 @@ wof.functionWidget.spanner.SubmitSpanner.prototype = {
     _afterRender: function () {
         if(!jQuery.isEmptyObject(this.getPropertys())){
             this.getPropertys().activeClass = 'Submit';
+            var node = wof.util.ObjectManager.get(this.getPropertys().id);
+            this._cutFlowLayoutIco.css('top',0).css('left',0);
+            node.getDomInstance().append(this._cutFlowLayoutIco);
         }
         this.setParameters(this.getPropertys());
         this.sendMessage('wof.functionWidget.spanner.SubmitSpanner_render');

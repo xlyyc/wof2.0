@@ -57,7 +57,7 @@ wof.functionWidget.SelectAll.prototype = {
 
     //渲染前处理方法
     _beforeRender: function () {
-
+        this.setHiden(true);
     },
 
     //渲染方法 必须实现此方法

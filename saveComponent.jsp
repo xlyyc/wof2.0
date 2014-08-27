@@ -37,12 +37,16 @@
     clzStr = clzStr.replaceAll("\\[BizClass\\]", clzName);
     writeFile(path+"/src/wof/bizWidget/"+clzName+".js", clzStr, false);
 
+    writeFile(path+"/runtime/src/wof/bizWidget/"+clzName+".js", clzStr, false);
+
     //生成扳手类
     //读取扳手类模板
     String clzSpannerStr = readFile(path+"/BizClassSpanner.js");
     clzSpannerStr = clzSpannerStr.replaceAll("\\[name\\]", name);
     clzSpannerStr = clzSpannerStr.replaceAll("\\[BizClass\\]", clzName);
     writeFile(path+"/src/wof/bizWidget/spanner/"+clzName+"Spanner.js", clzSpannerStr, false);
+
+    writeFile(path+"/runtime/src/wof/bizWidget/spanner/"+clzName+"Spanner.js", clzSpannerStr, false);
 
     //读取js引用文件
     String jsStr = readFile(path+"/componentList.js");
