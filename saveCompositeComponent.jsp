@@ -1,25 +1,39 @@
 ﻿<%@ page contentType="text/html; charset=utf-8"%>
 <%@ page language="java" %>
-<%@ page import="java.io.*" %>
+<%@ page import="java.io.*,java.util.*" %>
+<%!
+    //读取文本文件
+    public String readFile(String path) throws FileNotFoundException, IOException{
+        Reader reader = new InputStreamReader(new FileInputStream(path),"UTF-8");
+        int tempchar;
+        StringBuilder sb = new StringBuilder();
+        while ((tempchar = reader.read()) != -1) {
+            if(((char) tempchar) != '\r') {
+                sb.append((char) tempchar);
+            }
+        }
+        reader.close();
+        return sb.toString();
+    }
+
+    //写入文件
+    public void writeFile(String path, String content, boolean type) throws FileNotFoundException, IOException{
+        OutputStreamWriter os = new OutputStreamWriter(new FileOutputStream(path, type), "UTF-8");
+        os.write(content);
+        os.flush();
+        os.close();
+    }
+%>
 <%
     String id = request.getParameter("id");
     String name = request.getParameter("name");
     String data = request.getParameter("data");
     String path = request.getRealPath("wof2.0");
     //为每个复合构件生成独立的json数据文件
-    String jsonPath = path + "/compositeComponent/"+id+".json";
-    OutputStreamWriter os1 = new OutputStreamWriter(new FileOutputStream(jsonPath), "UTF-8");
-    os1.write(data);
-    os1.flush();
-    os1.close();
+    writeFile(path + "/compositeComponent/"+id+".json", data, false);
+
     //追加的方式生成复合构件列表js
-    String compositeComponentPath = path + "/compositeComponent/compositeComponent.js";
-    OutputStreamWriter os2 = new OutputStreamWriter(new FileOutputStream(compositeComponentPath,true), "UTF-8");
-    os2.write(id);
-    os2.write("@wof@");
-    os2.write(name);
-    os2.write("@wof@");
-    os2.flush();
-    os2.close();
+    writeFile(path + "/compositeComponent/compositeComponent.js", id+"@wof@"+name+"@wof@", true);
+
     out.print("保存复合构件成功");
 %>
