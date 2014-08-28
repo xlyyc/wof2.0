@@ -11,6 +11,24 @@ wof.bizWidget.[BizClass] = function () {
 };
 wof.bizWidget.[BizClass].prototype = {
 
+    _init: function(data){
+        var _this = this;
+        var node = eval('(new '+data.className+'())');
+        node.setData(data);
+        node.appendTo(this);
+        function _setChild(child){
+            var comp = child.getComponent();
+            if(comp==null){
+                child.setComponentName(_this.getClassName());
+                console.log(child.getClassName());
+            }
+            for(var i=0; i<child.childNodes().length; i++){
+                _setChild(child.childNodes()[i]);
+            }
+
+        }
+        _setChild(node);
+    },
 
     /**
      * Render 方法定义
@@ -18,8 +36,6 @@ wof.bizWidget.[BizClass].prototype = {
 
     _initRender: function () {
         var _this = this;
-
-        this.getDomInstance().css('background-color','black');
 
     },
 
@@ -56,9 +72,22 @@ wof.bizWidget.[BizClass].prototype = {
 
     //创建新的[BizClass]
     createSelf: function(width, height){
-        var node = wof$.create('[BizClass]');
-        node.setWidth(50);
-        node.setHeight(50);
+        var node = null;
+        var data = null;
+        jQuery.ajax({
+            url: '/wof2.0/component/[BizClass].json',
+            type: 'get',
+            async: false,
+            dataType:'json',
+            success:function(data){
+                node = wof$.create('[BizClass]',data);
+                node.setWidth(50);
+                node.setHeight(50);
+            },
+            error:function(e){
+                alert('读取业务构件发生错误:'+e);
+            }
+        });
         return node;
     }
 

@@ -157,7 +157,7 @@ wof.functionWidget.SelectAll.prototype = {
     },
 
     _receiveCheckBoxClick : function(message){
-        var obj = wof$.find('#'+message.sender.id).get(0);
+        var obj = wof.util.ObjectManager.get(message.sender.id);
         var checkBoxType = this._getCheckBoxType(obj.getId());
         //如果是全选框发出的消息 则全选或全不选多选框
         if(checkBoxType=='checkAll'){

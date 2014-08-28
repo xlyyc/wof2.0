@@ -697,6 +697,7 @@ wof.bizWidget.FlowLayoutSection.prototype = {
         //添加label
         if(this._label==null){
             var label = wof$.create('Label');
+            label.setComponentName(this.getClassName());
             label.setTop(0);
             label.setLeft(0);
             this._label = label;

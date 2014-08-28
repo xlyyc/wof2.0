@@ -25,14 +25,13 @@
     }
 %>
 <%
-    String id = request.getParameter("id");
     String name = request.getParameter("name");
     String clzName = request.getParameter("clzName");
     String data = request.getParameter("data");
     String path = request.getRealPath("wof2.0");
 
-    //生成一个独立的包装类（外观模式）
-    //读取包装类模板
+    //生成一个独立的构件类（外观模式）
+    //读取构件类模板
     String clzStr = readFile(path+"/BizClass.js");
     clzStr = clzStr.replaceAll("\\[BizClass\\]", clzName);
     writeFile(path+"/src/wof/bizWidget/"+clzName+".js", clzStr, false);
@@ -58,15 +57,8 @@
     //以追加的方式向生成业务构件记录js插入新的构件类名记录
     writeFile(path+"/component/component.js", clzName+"@wof@", true);
 
+    //为每个构件生成独立的json数据文件
+    writeFile(path + "/component/"+clzName+".json", data, false);
+
     out.print("保存业务构件成功");
-
-
-    //为每个业务构件生成独立的json数据文件
-    /**
-    String jsonPath = path + "/component/"+id+".json";
-    OutputStreamWriter os1 = new OutputStreamWriter(new FileOutputStream(jsonPath), "UTF-8");
-    os1.write(data);
-    os1.flush();
-    os1.close();
-    */
 %>
